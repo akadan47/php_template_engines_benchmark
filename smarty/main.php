@@ -1,6 +1,6 @@
 <?php
 include '../data.inc';
-require('../engines/smarty/Smarty.class.php');
+require('../_lib/smarty/Smarty.class.php');
 
 $smarty = new Smarty();
 $smarty->template_dir = './tpl';

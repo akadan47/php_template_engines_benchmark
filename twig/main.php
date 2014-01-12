@@ -1,6 +1,6 @@
 <?php
 include '../data.inc';
-require('../engines/twig/Autoloader.php');
+require('../_lib/twig/Autoloader.php');
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem('tpl');
