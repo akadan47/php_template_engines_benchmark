@@ -1,28 +1,22 @@
 <?php
-include '../data.inc';
+require('../data.php');
 require('../_lib/gekkon/gekkon.php');
-#error_reporting(E_ALL ^ E_NOTICE);
+
+$is_json = isset($_GET['json']);
+$is_include = isset($_GET['include']);
+
+$tpl = $is_include ? "main_inc.tpl" : "main.tpl";
+$method = $is_json ? "get_display" : "display";
 
 $gekkon = new Gekkon(dirname(__file__), dirname(__file__).'/tpl/tpl_bin/', '/tpl/');
+
 $start = microtime(true);
 $gekkon->register('data', $_DATA);
+$gekkon->$method($tpl);
+$time = microtime(true)-$start;
 
-if(isset($_GET['include'])){
-    if(isset($_GET['time'])) {
-        $gekkon->get_display('main_inc.tpl');
-    } else {
-        $gekkon->display('main_inc.tpl');
-    }
-} else {
-    if(isset($_GET['time'])) {
-        $gekkon->get_display('main.tpl');
-    } else {
-        $gekkon->display('main.tpl');
-    }
-}
-if(isset($_GET['time'])) {
+if ($is_json) {
     header('Content-type: application/json');
-    echo "{\"time\":".(microtime(true)-$start)."}";
-} else {
-    echo "<div id=\"time\"><b>Time</b>: ".(microtime(true)-$start)."</div>";
-}
+    echo json_encode(array("time"=>$time));
+} else
+    echo "<div id=\"time\"><b>Time</b>: ".$time."</div>";

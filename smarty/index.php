@@ -1,29 +1,24 @@
 <?php
-include '../data.inc';
+require('../data.php');
 require('../_lib/smarty/Smarty.class.php');
+
+$is_json = isset($_GET['json']);
+$is_include = isset($_GET['include']);
+
+$tpl = $is_include ? "main_inc.tpl" : "main.tpl";
+$method = $is_json ? "fetch" : "display";
 
 $smarty = new Smarty();
 $smarty->template_dir = './tpl';
 $smarty->compile_dir = './tpl/tpl_bin';
+
 $start = microtime(true);
 $smarty->assign($_DATA);
+$smarty->$method($tpl);
+$time = microtime(true)-$start;
 
-if(isset($_GET['include'])){
-    if(isset($_GET['time'])) {
-        $smarty->fetch('main_inc.tpl');
-    } else {
-        $smarty->display('main_inc.tpl');
-    }
-} else {
-    if(isset($_GET['time'])) {
-        $smarty->fetch('main.tpl');
-    } else {
-        $smarty->display('main.tpl');
-    }
-}
-if(isset($_GET['time'])) {
+if ($is_json) {
     header('Content-type: application/json');
-    echo "{\"time\":".(microtime(true)-$start)."}";
-} else {
-    echo "<div id=\"time\"><b>Time</b>: ".(microtime(true)-$start)."</div>";
-}
+    echo json_encode(array("time"=>$time));
+} else
+    echo "<div id=\"time\"><b>Time</b>: ".$time."</div>";
