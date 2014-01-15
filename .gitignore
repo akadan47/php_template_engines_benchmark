@@ -1,5 +1,4 @@
-.idea
-.idea/*
+.idea/
 **tpl_bin
 *.bak
 *.log
