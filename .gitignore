@@ -3,3 +3,4 @@
 tpl_bin/*
 *.bak
 *.log
+nbproject/
