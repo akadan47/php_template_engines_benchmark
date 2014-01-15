@@ -1,0 +1,8 @@
+<section id="vendors">
+    <h4>Vendors:</h4>
+    <ul>
+        {% for vendor in vendor_list %}
+            <li{% if vendor.id == good.vendor.id %} class="current"{% endif %}><a href="#vendor_{{ vendor.id }}.html">{{ vendor.name }}</a></li>
+        {% endfor %}
+    </ul>
+</section>

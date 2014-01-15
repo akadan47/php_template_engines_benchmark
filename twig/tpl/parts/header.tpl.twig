@@ -1,0 +1,20 @@
+<header>
+    <h2>{{ shop_name|title }}</h2>
+    <br/>
+    <nav>
+        <ul>
+            {% for menu_item in menu_list %}
+                <li{% if menu_item.current %} class="current"{% endif %}>
+                    <a href="{{ menu_item.url }}">
+                        {% if menu_item.current %}
+                            <b>{{ menu_item.name|capitalize }}</b>
+                        {% else %}
+                            {{ menu_item.name|capitalize }}
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+
+        </ul>
+    </nav>
+</header>

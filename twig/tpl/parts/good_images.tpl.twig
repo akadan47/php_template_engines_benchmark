@@ -1,0 +1,13 @@
+<section id="good_image">
+    <div id="good_image_main">
+        <img src="{{ good.images.0 }}" alt=""/>
+    </div>
+    <div id="good_image_list">
+        {% for image in good.images %}
+            {% if not loop.first %}
+                <a href="#{{ loop.counter }}"><img src="{{ image }}" alt=""/></a>
+            {% endif %}
+        {% endfor %}
+        <div style="clear: both"></div>
+    </div>
+</section>
