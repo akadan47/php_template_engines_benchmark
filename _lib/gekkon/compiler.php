@@ -20,7 +20,6 @@ class GekkonCompiler {
     function compile($tpl_name)
     {
         $this->error = array();
-        $this->tpl_path = $this->gekkon->tpl_path;
         $tpl_file = $this->gekkon->full_tpl_path($tpl_name);
         if(!is_file($tpl_file))
         {
@@ -30,7 +29,6 @@ class GekkonCompiler {
 
         $this->file_list = array();
         $this->bin_file = $this->gekkon->full_bin_path($tpl_name);
-        if(strpos($this->bin_file, '/!') !== false) $this->tpl_path = '';
 
         $this->get_file_list();
 
@@ -51,9 +49,10 @@ class GekkonCompiler {
     function compile_file($tpl_name)
     {
         $this->tpl_name = $tpl_name;
+        $full_tpl_path = $this->gekkon->full_tpl_path($tpl_name);
         return "\nfunction ".$this->gekkon->fn_name($tpl_name)."(&\$gekkon){\n".
-            '//Template '.$this->tpl_path.$tpl_name.";\n".
-            $this->compile_str(file_get_contents($this->gekkon->full_tpl_path($tpl_name))).
+            '// Template file: '.$full_tpl_path."\n".
+            $this->compile_str(file_get_contents($full_tpl_path)).
             "}\n";
         $this->tpl_name = '';
     }
@@ -104,17 +103,34 @@ class GekkonCompiler {
         $line = 0;
         while($_str != '')
         {
-            if(!preg_match('/\{(\s*([\@\$\(a-z_A-Z]+)(\s*[^\}\n]+)?)\}/us',
-                    $_str, $_tag, PREG_OFFSET_CAPTURE))
+            $is_tag = preg_match('/\{(\s*([\=\@\$a-z_A-Z]+)(\s*[^\}\n]+)?)\}/us',
+                $_str, $_tag, PREG_OFFSET_CAPTURE);
+            $is_comment = preg_match('/{((#)(.+)#)}/Uus', $_str, $_comment,
+                PREG_OFFSET_CAPTURE);
+            if(!$is_tag && !$is_comment)
             {
                 $rez[] = array('name' => '<static>', 'content' => $_str);
                 break;
+            }
+            if(!$is_tag && $is_comment) $_tag = $_comment;
+            if($is_tag && $is_comment)
+            {
+                if($_tag[0][1] > $_comment[0][1])
+                {
+                    $_tag = $_comment;
+                    $line+=substr_count($_comment[0][0], "\n");
+                }
             }
 
             $open_start = $_tag[0][1];
             $open_len = strlen($_tag[0][0]);
             if($open_start > 0)
-                    $line+=substr_count($_str, "\n", 0, $open_start);
+            {
+                $line+=substr_count($_str, "\n", 0, $open_start);
+                $rez[] = array('name' => '<static>', 'content' => substr($_str,
+                        0, $open_start));
+            }
+
             $_tag = array(
                 'parent_name' => $_parent['name'],
                 'name' => $_tag[2][0],
@@ -124,10 +140,7 @@ class GekkonCompiler {
                 'raw_in' => $_tag[1][0],
             );
 
-            $rez[] = array('name' => '<static>', 'content' => substr($_str, 0,
-                    $open_start));
             $_str = substr($_str, $open_start + $open_len);
-
             $_tag = $this->load_tag($_tag);
 
             if($_tag['type'] != 0)
@@ -159,10 +172,17 @@ class GekkonCompiler {
     {
         $_tag['type'] = 0;
 
-        if($_tag['name'][0] == '@' || $_tag['name'][0] == '$' || $_tag['name'][0] == '(')
+        if($_tag['name'][0] === '@' || $_tag['name'][0] === '$' || $_tag['name'][0] === '=')
         {
             $_tag['raw_args'] = $_tag['raw_in'];
+            if($_tag['raw_args'][0] === '=')
+                    $_tag['raw_args'] = substr($_tag['raw_args'], 1);
             $_tag['name'] = 'echo';
+        }
+
+        if($_tag['name'][0] === '#')
+        {
+            $_tag['name'] = 'inline_comment';
         }
 
         if(is_file($tag_file = $this->gekkon->gekkon_path.'tags/'.$_tag['name'].'.php'))
@@ -233,12 +253,12 @@ class GekkonCompiler {
 
     function get_file_list($dir = '')
     {
-        $list = scandir($this->gekkon->tpl_base_path.$this->tpl_path.$dir);
+        $list = scandir($this->gekkon->tpl_base_path.$this->gekkon->tpl_path.$dir);
         foreach($list as $file)
         {
             if($file[0] != '.')
             {
-                if(is_dir($this->gekkon->tpl_base_path.$this->tpl_path.$dir.$file))
+                if(is_dir($this->gekkon->tpl_base_path.$this->gekkon->tpl_path.$dir.$file))
                         $this->get_file_list($dir.$file.'/');
                 else if(strrchr($file, '.') == '.tpl' && $this->bin_file == $this->gekkon->full_bin_path($dir.$file))
                         $this->file_list[] = $dir.$file;

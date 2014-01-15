@@ -34,12 +34,12 @@ function gekkon_tag_ifchange($compiler, $_tag)
     if($exp !== false)
     {
         $value = "$var_cur = $exp;\n";
-        $show = $compiler->compile_parsed_str($content, $_tag);
+        $show = $compiler->compile_parsed_str($content);
     }
     else
     {
-        $value = "ob_start();".
-            $compiler->compile_parsed_str($content, $_tag).
+        $value = "ob_start();\n".
+            $compiler->compile_parsed_str($content).
             "$var_cur = ob_get_contents();".
             "ob_end_clean();\n";
         $show = "echo $var_cur;\n";
