@@ -1,6 +1,6 @@
 .idea
 .idea/*
-tpl_bin/*
+**tpl_bin
 *.bak
 *.log
-nbproject/
+nbproject
