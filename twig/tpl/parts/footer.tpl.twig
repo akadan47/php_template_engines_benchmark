@@ -1,0 +1,19 @@
+<footer>
+    <h5>&copy; {{ shop_name }}</h5>
+    <nav>
+        <ul>
+            {% for menu_item in menu_list %}
+                <li{% if menu_item.current %} class="current"{% endif %}>
+                    <a href="{{ menu_item.url}}">
+                        {% if menu_item.current %}
+                            <b>{{ menu_item.name|title }}</b>
+                        {% else %}
+                            {{ menu_item.name|title }}
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+</footer>

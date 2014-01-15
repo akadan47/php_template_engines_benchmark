@@ -1,0 +1,8 @@
+<section id="models">
+    <b>Other models</b>
+    <ul>
+        {% for model in good.model_list %}
+            <li><a href="{{ model.url }}">{{ model.name }}</a></li>
+        {% endfor %}
+    </ul>
+</section>

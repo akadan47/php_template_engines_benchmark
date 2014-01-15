@@ -1,0 +1,10 @@
+<section id="blog">
+    <h3>Blog</h3>
+    <br/>
+    <ul>
+        {% for post in blog_posts %}
+            <li>{{ post.date|date('m/d/Y') }} <br/> <a href="#blog_{{ post.id }}.html">{{ post.title }}</a></li>
+            <br/>
+        {% endfor %}
+    </ul>
+</section>

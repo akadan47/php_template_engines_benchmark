@@ -1,0 +1,18 @@
+<tr>
+    {% if property.type == 'category' %}
+        <td colspan="2" class="category"><b>{{ property.value|title }}</b></td>
+    {% elseif property.type == 'bool' %}
+        <td>{{ property.name|title }}</td>
+        <td>{% if property.value %}Yes{% else %}No{% endif %}</td>
+    {% elseif property.type == 'string' %}
+        <td>{{ property.name|title }}</td>
+        <td>{{ property.value }}</td>
+    {% elseif property.type == 'list' %}
+        <td>{{ property.name|title }}</td>
+        <td>
+            {% for value in property.value %}
+                {{value }}{% if not loop.last %},{% else %}.{% endif %}
+            {% endfor %}
+        </td>
+    {% endif %}
+</tr>
