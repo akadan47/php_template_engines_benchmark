@@ -16,18 +16,18 @@ $start = microtime(true);
 
 if(isset($_GET['include'])){
     if(isset($_GET['time'])) {
-        $template = $twig->loadTemplate('main_inc.tpl.twig');
+        $template = $twig->loadTemplate('main_inc.tpl');
         $template->render($_DATA);
     } else {
-        $template = $twig->loadTemplate('main_inc.tpl.twig');
+        $template = $twig->loadTemplate('main_inc.tpl');
         $template->display($_DATA);
     }
 } else {
     if(isset($_GET['time'])) {
-        $template = $twig->loadTemplate('main.tpl.twig');
+        $template = $twig->loadTemplate('main.tpl');
         $template->render($_DATA);
     } else {
-        $template = $twig->loadTemplate('main.tpl.twig');
+        $template = $twig->loadTemplate('main.tpl');
         $template->display($_DATA);
     }
 }
