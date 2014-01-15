@@ -1,6 +1,6 @@
 <?php
 
-//version 2.0
+//version 4.1
 class Gekkon {
 
     var $bin_path;
@@ -19,7 +19,7 @@ class Gekkon {
         $this->tpl_name = '';
     }
 
-    function register($name, $data)
+    function register($name, &$data)
     {
         $this->data[$name] = &$data;
     }
