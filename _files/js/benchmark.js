@@ -27,9 +27,16 @@ function Benchmark(engines, options) {
 
     function bench() {
         if (self.request_count > 0) {
+            var params = {
+                'json': true
+            };
+            if (self.is_first) {
+                params['clear'] = true
+            }
+            console.log(params);
             $.ajax({
                 type: 'GET',
-                data: {'json':true},
+                data: params,
                 url: self.engines[0].url,
                 dataType: 'json',
                 async: 'false',

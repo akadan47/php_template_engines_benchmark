@@ -4,6 +4,7 @@ require('../_lib/twig/Autoloader.php');
 
 $is_json = isset($_GET['json']);
 $is_include = isset($_GET['include']);
+$is_clear = isset($_GET['clear']);
 
 $tpl = $is_include ? "main_inc.tpl.twig" : "main.tpl.twig";
 $method = $is_json ? "render" : "display";
@@ -14,6 +15,7 @@ $twig = new Twig_Environment($loader, array('cache' => 'tpl/cache', 'autoescape'
 
 $start = microtime(true);
 $template = $twig->loadTemplate($tpl);
+if ($is_clear) $twig->clearTemplateCache();
 $template->$method($_DATA);
 $time = microtime(true)-$start;
 
