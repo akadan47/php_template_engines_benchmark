@@ -47,7 +47,7 @@ function Benchmark(engines, options) {
                         self.init.push(time_init);
                         self.render.push(time_render);
                         self.request_count -= 1;
-                        self.options.on_step(self.engines[0], (time_init*1000).toFixed(4), (time_render*1000).toFixed(4), self.request_count);
+                        self.options.on_step(self.engines[0], (time_init*1000).toFixed(4), (time_render*1000).toFixed(4), Math.round(((self.options.requests - self.request_count)*100)/self.options.requests));
                     } else {
                         self.is_first = false;
                         self.options.on_start(self.engines[0]);

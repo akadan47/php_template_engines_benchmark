@@ -52,19 +52,26 @@
 
 <body>
 
-<div class="container bs-docs-container">
+<div class="container">
 
-    <div class="jumbotron">
-        <button class="btn btn-lg btn-success" id="start">Start benchmark!</button>
+    <div class="row">
+        <div class="col-xs-7">
+            <h3>Typical page benchmark <br/>for PHP template engines</h3>
+        </div>
+        <div class="col-xs-5">
+            <button class="btn btn-lg btn-warning" id="start">Start benchmark!</button>
+        </div>
     </div>
+
+    <hr/>
 
     <div class="row">
 
-        <div class="col-md-7">
+        <div class="col-xs-7">
             <div id="process"></div>
         </div>
 
-        <div class="col-md-5">
+        <div class="col-xs-5">
             <div class="bs-sidebar hidden-print affix-top">
                 <div class="panel panel-default hidden" id="result_init">
                     <div class="panel-heading"><h4 class="panel-title">Generation time (less is the better, ms)</h4></div>
@@ -119,7 +126,7 @@
 
         function start(engine){
             engine.line = new TimeSeries();
-            engine.chart = new SmoothieChart({millisPerPixel:50,maxValueScale:2,minValue:0,grid:{fillStyle:'#ffffff',strokeStyle:'rgba(119,119,119,0.11)',sharpLines:true,borderVisible:false},labels:{fillStyle:'#242424'}});
+            engine.chart = new SmoothieChart({millisPerPixel:50,maxValueScale:2,minValue:0,grid:{fillStyle:'#ffffff',strokeStyle:'rgba(119,119,119,0.11)',sharpLines:true,borderVisible:false},labels:{fillStyle:'#777777'}});
             engine.chart.addTimeSeries(engine.line, {lineWidth:0.25, strokeStyle:'#03dc00', fillStyle:'#03dc00'});
             engine.chart.streamTo(document.getElementById("chart_"+engine.id), 100);
             engine.chart.start();
@@ -127,11 +134,13 @@
         }
 
         function step(engine, time_init, time_render, count) {
+            $('#bar_'+engine.id).css('width', count+"%");
             engine.line.append(new Date().getTime(), time_init);
         }
 
         function end(engine, avg_init, min_init, max_init, avg_render, min_render, max_render) {
             engine.chart.stop();
+            $('#bar_'+engine.id).css('opacity', '0.15');
             $('.panel-warning').removeClass('panel-warning');
             $('#score_init').append($('<tr><td><b>'+engine.name+'</b></td><td><b>'+avg_init+'</b></td><td>'+min_init+'</td><td>'+max_init+'</td></tr>'));
             $('#score_render').append($('<tr><td><b>'+engine.name+'</b></td><td><b>'+avg_render+'</b></td><td>'+min_render+'</td><td>'+max_render+'</td></tr>'));
@@ -159,8 +168,8 @@
                             '<h3 class="panel-title">'+engine.name+' <span class="label label-default pull-right"><a href="'+engine.url+'" target="_blank">HTML</a></span></h3>' +
                         '</div>' +
                         '<div class="panel-body panel-chart">' +
-                            '<canvas id="chart_' + engine.id + '" width="500" height="77">' +
-                            '<div class="progress progress-striped active"><div class="progress-bar progress-bar-success"></div></div>' +
+                            '<canvas id="chart_' + engine.id + '" width="500" height="77"></canvas>' +
+                            '<div class="progress"><div id="bar_' + engine.id + '" class="progress-bar progress-bar-primary"></div></div>' +
                         '</div>' +
                     '</div>'
                 );

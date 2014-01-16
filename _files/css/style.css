@@ -16,8 +16,9 @@ body {
   margin-bottom: 15px!important; }
 
 /* Make the masthead heading the same height as the navigation */
-.header h1 {
-  margin-top: 0px; }
+.header h3 {
+  margin-top: 0px;
+  display: inline-block; }
 
 /* Custom page footer */
 .footer {
@@ -50,21 +51,10 @@ body {
   margin-top: 28px; }
 
 /* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) {
-  /* Remove the padding we set earlier */
-  .header,
-  .marketing,
-  .footer {
-    padding-left: 0;
-    padding-right: 0; }
+.container {
+  max-width: none !important;
+  width: 970px; }
 
-  /* Space out the masthead */
-  .header {
-    margin-bottom: 30px; }
-
-  /* Remove the bottom border on the jumbotron for visual effect */
-  .jumbotron {
-    border-bottom: 0; } }
 #tablesort {
   margin-bottom: 0; }
   #tablesort th {
@@ -74,9 +64,10 @@ body {
   font-size: 14px; }
 
 .panel-title .label-default {
-  background: #ddd!important; }
+  background: #e8e8e8!important; }
   .panel-title .label-default a {
-    color: #777!important; }
+    color: #777!important;
+    text-decoration: none!important; }
 
 .panel-chart {
   padding: 5px 5px 0 5px; }
@@ -96,7 +87,7 @@ td {
   border-top: 1px dotted #ddd!important; }
 
 th {
-  border-bottom: 1px solid #000!important;
+  border-bottom: 2px solid #555!important;
   padding-bottom: 0!important;
   color: #777;
   cursor: pointer!important; }
@@ -104,3 +95,18 @@ th {
 .bs-sidebar .panel-body {
   padding-top: 5px!important;
   padding-bottom: 0!important; }
+
+.panel-chart canvas {
+  width: 500px;
+  height: 77px; }
+
+.progress {
+  margin-bottom: 5px!important;
+  height: 3px;
+  border-radius: 0!important; }
+  .progress .progress-bar {
+    background: #03c300; }
+
+#start {
+  margin-top: 25px;
+  margin-bottom: 5px; }
