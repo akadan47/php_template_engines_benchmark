@@ -1,5 +1,7 @@
 .idea/
 **tpl_bin
+**cache
 *.bak
 *.log
-nbproject
+.DS_Store
+Thumbs.db
