@@ -32,18 +32,18 @@
                 },
                 {
                     "id": "gekkon_includes",
-                    "name": "Gekkon with includes",
+                    "name": "Gekkon (includes)",
                     "url": "/gekkon/?include"
                 },
                 {
                     "id": "smarty_includes",
-                    "name": "Smarty with includes",
+                    "name": "Smarty (includes)",
                     "url": "/smarty/?include"
                 },
 
                 {
                     "id": "twig_includes",
-                    "name": "Twig with includes",
+                    "name": "Twig (includes)",
                     "url": "/twig/?include"
                 }
             ];
