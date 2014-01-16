@@ -1,6 +1,6 @@
 function Benchmark(engines, options) {
     this.options = {
-        "requests": 1500,
+        "requests": 1000,
         "include": true,
         "on_start": function(){},
         "on_step": function(){},
