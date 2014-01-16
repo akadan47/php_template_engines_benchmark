@@ -10,7 +10,7 @@ $method = $is_json ? "render" : "display";
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem('tpl');
-$twig = new Twig_Environment($loader, array('cache' => 'tpl/tpl_bin', 'autoescape' => false, 'auto_reload' => false));
+$twig = new Twig_Environment($loader, array('cache' => 'tpl/cache', 'autoescape' => false, 'auto_reload' => false));
 
 $start = microtime(true);
 $template = $twig->loadTemplate($tpl);

@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
         <title>{$data.shop_name.ucwords()}</title>
-        <link rel="stylesheet" href="/css/page.css">
+        <link rel="stylesheet" href="/_files/css/page.css">
     </head>
     <body>
         <div id="layout">

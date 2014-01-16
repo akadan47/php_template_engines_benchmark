@@ -147,10 +147,10 @@ $_GOOD = array(
     "price_old" => 1199,
     "price" => 718.19,
     "images" => array(
-        "/i/81bPNdDCsBL._SL500_.jpg",
-        "/i/716Yq1E4tJL._SL50_.jpg",
-        "/i/81uvRbVQVPL._SL50_.jpg",
-        "/i/81tOY7oWHGL._SL50_.jpg",
+        "/_files/i/81bPNdDCsBL._SL500_.jpg",
+        "/_files/i/716Yq1E4tJL._SL50_.jpg",
+        "/_files/i/81uvRbVQVPL._SL50_.jpg",
+        "/_files/i/81tOY7oWHGL._SL50_.jpg",
     ),
     "short_details" => array(
         "4.0-inch Retina display",

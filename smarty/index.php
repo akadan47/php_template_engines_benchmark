@@ -10,7 +10,7 @@ $method = $is_json ? "fetch" : "display";
 
 $smarty = new Smarty();
 $smarty->template_dir = './tpl';
-$smarty->compile_dir = './tpl/tpl_bin';
+$smarty->compile_dir = './tpl/cache';
 
 $start = microtime(true);
 $smarty->assign($_DATA);
