@@ -34,7 +34,6 @@ function Benchmark(engines, options) {
             if (self.is_first) {
                 params['clear'] = true
             }
-            console.log(params);
             $.ajax({
                 type: 'GET',
                 data: params,

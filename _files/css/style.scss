@@ -87,6 +87,11 @@ body {
     }
 }
 
+
+.panel-title {
+    font-size: 14px;
+}
+
 .panel-title .label-default {
     background: #ddd!important;
 
@@ -96,9 +101,33 @@ body {
 }
 
 .panel-chart {
-    padding: 5px;
+    padding: 5px 5px 0 5px;
 }
 
 canvas {
     margin: 0 auto;
+}
+
+th, td {
+    font-size: 13px;
+    font-weight: normal;
+
+    &:first-child {
+        padding-left: 0!important;
+    }
+
+    &:last-child {
+        padding-right: 0!important;
+    }
+}
+
+td {
+    border-top: 1px dotted #ddd!important;
+}
+
+th {
+    border-bottom: 2px solid #777!important;
+    padding-bottom: 0!important;
+    color: #777;
+    cursor: pointer!important;
 }

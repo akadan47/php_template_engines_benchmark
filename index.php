@@ -67,14 +67,14 @@
         <div class="col-md-5">
             <div class="bs-sidebar hidden-print affix-top">
                 <div class="panel panel-default hidden" id="result_init">
-                    <div class="panel-heading"><h3 class="panel-title">Generation time (less is the better, ms)</h3></div>
+                    <div class="panel-heading"><h4 class="panel-title">Generation time (less is the better, ms)</h4></div>
 
                     <div class="panel-body">
                         <table class="table" id="table_init">
                             <thead>
                                 <tr>
-                                    <th style="width: 90%;">Name</th>
-                                    <th>Avg</th>
+                                    <th style="width: 90%;">Engine</th>
+                                    <th><b>Avg</b></th>
                                     <th>Min</th>
                                     <th>Max</th>
                                 </tr>
@@ -87,14 +87,14 @@
                 </div>
 
                 <div class="panel panel-default hidden" id="result_render">
-                    <div class="panel-heading"><h3 class="panel-title">Render time (less is the better, ms)</h3></div>
+                    <div class="panel-heading"><h5 class="panel-title">Render time (less is the better, ms)</h5></div>
 
                     <div class="panel-body">
                         <table class="table" id="table_render">
                             <thead>
                             <tr>
-                                <th style="width: 90%;">Name</th>
-                                <th>Avg</th>
+                                <th style="width: 90%;">Engine</th>
+                                <th><b>Avg</b></th>
                                 <th>Min</th>
                                 <th>Max</th>
                             </tr>
@@ -119,7 +119,7 @@
 
         function start(engine){
             engine.line = new TimeSeries();
-            engine.chart = new SmoothieChart({millisPerPixel:53,grid:{fillStyle:'#ffffff',strokeStyle:'rgba(119,119,119,0.11)',sharpLines:true,borderVisible:false},labels:{fillStyle:'#242424'}});
+            engine.chart = new SmoothieChart({millisPerPixel:50,maxValueScale:2,minValue:0,grid:{fillStyle:'#ffffff',strokeStyle:'rgba(119,119,119,0.11)',sharpLines:true,borderVisible:false},labels:{fillStyle:'#242424'}});
             engine.chart.addTimeSeries(engine.line, {lineWidth:0.25, strokeStyle:'#03dc00', fillStyle:'#03dc00'});
             engine.chart.streamTo(document.getElementById("chart_"+engine.id), 100);
             engine.chart.start();
@@ -133,8 +133,8 @@
         function end(engine, avg_init, min_init, max_init, avg_render, min_render, max_render) {
             engine.chart.stop();
             $('.panel-warning').removeClass('panel-warning');
-            $('#score_init').append($('<tr><td>'+engine.name+'</td><td>'+avg_init+'</td><td>'+min_init+'</td><td>'+max_init+'</td></tr>'));
-            $('#score_render').append($('<tr><td>'+engine.name+'</td><td>'+avg_render+'</td><td>'+min_render+'</td><td>'+max_render+'</td></tr>'));
+            $('#score_init').append($('<tr><td><b>'+engine.name+'</b></td><td><b>'+avg_init+'</b></td><td>'+min_init+'</td><td>'+max_init+'</td></tr>'));
+            $('#score_render').append($('<tr><td><b>'+engine.name+'</b></td><td><b>'+avg_render+'</b></td><td>'+min_render+'</td><td>'+max_render+'</td></tr>'));
         }
 
         function complete() {
@@ -156,10 +156,10 @@
                 var engine_panel = $(
                     '<div id="panel_' + engine.id + '" class="panel panel-default">' +
                         '<div class="panel-heading">' +
-                            '<h3 class="panel-title">'+engine.name+' <span class="label label-default pull-right"><a href="'+engine.url+'" target="_blank">View</a></span></h3>' +
+                            '<h3 class="panel-title">'+engine.name+' <span class="label label-default pull-right"><a href="'+engine.url+'" target="_blank">HTML</a></span></h3>' +
                         '</div>' +
                         '<div class="panel-body panel-chart">' +
-                            '<canvas id="chart_' + engine.id + '" width="500" height="60">' +
+                            '<canvas id="chart_' + engine.id + '" width="500" height="77">' +
                             '<div class="progress progress-striped active"><div class="progress-bar progress-bar-success"></div></div>' +
                         '</div>' +
                     '</div>'
