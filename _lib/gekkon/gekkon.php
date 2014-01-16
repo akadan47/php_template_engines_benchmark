@@ -43,7 +43,7 @@ class Gekkon {
                 return $this->error('Template '.$tpl_name.' cannot be found at '.$tpl_file,
                     'gekkon');
 
-        if($bin_time < $tpl_time)
+        //if($bin_time < $tpl_time)
         {
             $this->clear_cache($tpl_name);
             if(!$this->compile($tpl_name))
@@ -89,7 +89,7 @@ class Gekkon {
             $cache_file = $this->cache_dir($tpl_name).
                 $this->cache_file($tpl_name, $id);
 
-            if(is_file($cache_file)) unlink($cache_file);
+            if(is_file($cache_file)) @ unlink($cache_file);
             return;
         }
         else $this->clear_dir(dirname($this->full_bin_path($tpl_name)).'/');
@@ -108,7 +108,7 @@ class Gekkon {
 
     function clear_dir($path)
     {
-        if($dh = opendir($path))
+        if(is_dir($path) && $dh = opendir($path))
         {
             while(($file = readdir($dh)) !== false)
             {
