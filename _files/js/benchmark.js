@@ -11,7 +11,8 @@ function Benchmark(engines, options) {
 
     this.engines = engines.slice(0);
     this.request_count = this.options.requests;
-    this.data = [];
+    this.init = [];
+    this.render = [];
     this.is_first = true;
 
     var self = this;
@@ -41,11 +42,13 @@ function Benchmark(engines, options) {
                 dataType: 'json',
                 async: 'false',
                 success: function(json) {
-                    var time = json['time'];
+                    var time_init = json['time_init'];
+                    var time_render = json['time_render'];
                     if (!self.is_first) {
-                        self.data.push(time);
+                        self.init.push(time_init);
+                        self.render.push(time_render);
                         self.request_count -= 1;
-                        self.options.on_step(self.engines[0], (time).toFixed(8), self.request_count);
+                        self.options.on_step(self.engines[0], (time_init).toFixed(8), (time_render).toFixed(8), self.request_count);
                     } else {
                         self.is_first = false;
                         self.options.on_start(self.engines[0]);
@@ -55,13 +58,24 @@ function Benchmark(engines, options) {
                 error: bench
             });
         } else {
-            var average_time = average(self.data) * 1000;
-            var min_time = Math.min.apply({}, self.data) * 1000;
-            var max_time = Math.max.apply({}, self.data) * 1000;
-            self.options.on_end(self.engines[0], average_time.toFixed(2), min_time.toFixed(2), max_time.toFixed(2));
+            var avg_init = average(self.init) * 1000;
+            var avg_render = average(self.render) * 1000;
+            var min_init = Math.min.apply({}, self.init) * 1000;
+            var min_render = Math.min.apply({}, self.render) * 1000;
+            var max_init = Math.max.apply({}, self.init) * 1000;
+            var max_render = Math.max.apply({}, self.render) * 1000;
+            self.options.on_end(self.engines[0],
+                avg_init.toFixed(2),
+                min_init.toFixed(2),
+                max_init.toFixed(2),
+                avg_render.toFixed(2),
+                min_render.toFixed(2),
+                max_render.toFixed(2)
+            );
 
             self.engines.shift();
-            self.data = [];
+            self.init = [];
+            self.render = [];
             self.is_first = true;
             if (self.engines.length) {
                 self.request_count = self.options.requests;

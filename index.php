@@ -66,23 +66,43 @@
 
         <div class="col-md-5">
             <div class="bs-sidebar hidden-print affix-top">
-                <div class="panel panel-default hidden" id="results">
-                    <div class="panel-heading"><h3 class="panel-title">Results (less is the better, ms)</h3></div>
+                <div class="panel panel-default hidden" id="result_init">
+                    <div class="panel-heading"><h3 class="panel-title">Generation time (less is the better, ms)</h3></div>
 
                     <div class="panel-body">
-                    <table class="table" id="tablesort">
-                        <thead>
+                        <table class="table" id="table_init">
+                            <thead>
+                                <tr>
+                                    <th style="width: 90%;">Name</th>
+                                    <th>Avg</th>
+                                    <th>Min</th>
+                                    <th>Max</th>
+                                </tr>
+                            </thead>
+                            <tbody id="score_init">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel panel-default hidden" id="result_render">
+                    <div class="panel-heading"><h3 class="panel-title">Render time (less is the better, ms)</h3></div>
+
+                    <div class="panel-body">
+                        <table class="table" id="table_render">
+                            <thead>
                             <tr>
                                 <th style="width: 90%;">Name</th>
                                 <th>Avg</th>
                                 <th>Min</th>
                                 <th>Max</th>
                             </tr>
-                        </thead>
-                        <tbody id="score">
+                            </thead>
+                            <tbody id="score_render">
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -106,27 +126,32 @@
             $('#panel_'+engine.id).addClass('panel-warning');
         }
 
-        function step(engine, time, count) {
-            engine.line.append(new Date().getTime(), time);
+        function step(engine, time_init, time_render, count) {
+            engine.line.append(new Date().getTime(), time_init);
         }
 
-        function end(engine, avg, min, max) {
+        function end(engine, avg_init, min_init, max_init, avg_render, min_render, max_render) {
             engine.chart.stop();
             $('.panel-warning').removeClass('panel-warning');
-            $('#score').append($('<tr><td>'+engine.name+'</td><td>'+avg+'</td><td>'+min+'</td><td>'+max+'</td></tr>'));
+            $('#score_init').append($('<tr><td>'+engine.name+'</td><td>'+avg_init+'</td><td>'+min_init+'</td><td>'+max_init+'</td></tr>'));
+            $('#score_render').append($('<tr><td>'+engine.name+'</td><td>'+avg_render+'</td><td>'+min_render+'</td><td>'+max_render+'</td></tr>'));
         }
 
         function complete() {
-            $("#tablesort").trigger('update').tablesorter();
-            $('#results').addClass('panel-warning');
+            $("#table_init").trigger('update').tablesorter();
+            $("#table_render").trigger('update').tablesorter();
+            $('#result_init').addClass('panel-warning');
+            $('#result_render').addClass('panel-warning');
             $('#start').text('Restart Benchmark!').removeAttr('disabled');
         }
 
         $('#start').on('click', function(){
             $(this).attr('disabled', 'disabled');
             $('#process').children().remove();
-            $('#score').children().remove();
-            $('#results').addClass('hidden');
+            $('#score_init').children().remove();
+            $('#score_render').children().remove();
+            $('#result_init').addClass('hidden');
+            $('#result_render').addClass('hidden');
             $.each(ENGINES, function(i, engine){
                 var engine_panel = $(
                     '<div id="panel_' + engine.id + '" class="panel panel-default">' +
@@ -140,7 +165,8 @@
                     '</div>'
                 );
                 $('#process').append(engine_panel);
-                $('#results').removeClass('hidden');
+                $('#result_init').removeClass('hidden');
+                $('#result_render').removeClass('hidden');
             });
             var benchmark = new Benchmark(ENGINES, {'on_start': start, 'on_step': step, 'on_end': end, 'on_complete': complete});
             benchmark.start();
