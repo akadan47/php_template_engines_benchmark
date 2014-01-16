@@ -126,8 +126,13 @@ td {
 }
 
 th {
-    border-bottom: 2px solid #777!important;
+    border-bottom: 1px solid #000!important;
     padding-bottom: 0!important;
     color: #777;
     cursor: pointer!important;
+}
+
+.bs-sidebar .panel-body {
+    padding-top: 5px!important;
+    padding-bottom: 0!important;
 }
