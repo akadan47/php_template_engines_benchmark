@@ -99,8 +99,8 @@ function gekkon_tag_foreach($compiler, $_tag)
         ".$meta_name."['last']=(".$meta_name."['revcounter0']==0?1:0);
         ";
     }
-
-    $loop_start = 'if(!empty('.$args['from'].")){\n";
+    $_is_empty = '$_gkn_foreach'.$compiler->getUID();
+    $loop_start = "$_is_empty=true;\n";
     if(isset($args['key']))
             $loop_start .= 'foreach('.$args['from'].' as '.$args['key'].'=>'.$args['item']."){\n";
     else $loop_start .= 'foreach('.$args['from'].' as '.$args['item']."){\n";
@@ -113,7 +113,7 @@ function gekkon_tag_foreach($compiler, $_tag)
     $empty = '';
     if(isset($content[1]))
     {
-        $empty = 'else {'.
+        $empty = "if($_is_empty) {\n".
             $compiler->compile_parsed_str($content[1]).
             "}\n";
     }
@@ -121,7 +121,7 @@ function gekkon_tag_foreach($compiler, $_tag)
         $loop_start.
         $compiler->compile_parsed_str($content[0]).
         $meta_body.
-        "}}\n".
+        "$_is_empty=false;}\n".
         $empty;
 }
 
