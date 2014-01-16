@@ -120,7 +120,7 @@
         function start(engine){
             engine.line = new TimeSeries();
             engine.chart = new SmoothieChart({millisPerPixel:53,grid:{fillStyle:'#ffffff',strokeStyle:'rgba(119,119,119,0.11)',sharpLines:true,borderVisible:false},labels:{fillStyle:'#242424'}});
-            engine.chart.addTimeSeries(engine.line, {lineWidth:0.5, strokeStyle:'#03dc00'});
+            engine.chart.addTimeSeries(engine.line, {lineWidth:0.25, strokeStyle:'#03dc00', fillStyle:'#03dc00'});
             engine.chart.streamTo(document.getElementById("chart_"+engine.id), 100);
             engine.chart.start();
             $('#panel_'+engine.id).addClass('panel-warning');
