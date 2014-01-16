@@ -1,6 +1,6 @@
 function Benchmark(engines, options) {
     this.options = {
-        "requests": 2000,
+        "requests": 1500,
         "include": true,
         "on_start": function(){},
         "on_step": function(){},
@@ -32,6 +32,7 @@ function Benchmark(engines, options) {
                 data: {'json':true},
                 url: self.engines[0].url,
                 dataType: 'json',
+                async: 'false',
                 success: function(json) {
                     var time = json['time'];
                     if (!self.is_first) {
