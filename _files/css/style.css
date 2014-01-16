@@ -55,10 +55,14 @@ body {
   max-width: none !important;
   width: 970px; }
 
-#tablesort {
-  margin-bottom: 0; }
-  #tablesort th {
-    cursor: pointer; }
+#tablesort th {
+  cursor: pointer; }
+
+table.table {
+  margin-bottom: 0px!important; }
+  table.table thead {
+    margin-bottom: 15px;
+    display: table-row-group; }
 
 .panel-title {
   font-size: 14px; }
@@ -84,17 +88,24 @@ th, td {
     padding-right: 0!important; }
 
 td {
-  border-top: 1px dotted #ddd!important; }
+  border-top: 1px dotted #ddd!important;
+  text-align: right; }
+  td.name {
+    text-align: left; }
 
 th {
-  border-bottom: 2px solid #555!important;
-  padding-bottom: 0!important;
-  color: #777;
-  cursor: pointer!important; }
+  border-bottom: 1px solid #777!important;
+  padding-bottom: 2px!important;
+  color: #999;
+  cursor: pointer!important;
+  text-align: right; }
+  th.name {
+    text-align: left; }
 
 .bs-sidebar .panel-body {
-  padding-top: 5px!important;
-  padding-bottom: 0!important; }
+  padding-top: 0px!important;
+  padding-bottom: 0!important;
+  min-height: 35px; }
 
 .progress {
   margin-bottom: 5px!important;
@@ -102,6 +113,10 @@ th {
   border-radius: 0!important; }
   .progress .progress-bar {
     background: #03c300; }
+
+#result_sidebar {
+  padding-top: 20px;
+  background: #f5f5f5; }
 
 #start {
   margin-top: 25px;

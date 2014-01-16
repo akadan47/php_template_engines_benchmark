@@ -71,16 +71,16 @@
             <div id="process"></div>
         </div>
 
-        <div class="col-xs-5">
+        <div id="result_sidebar" class="col-xs-5 hidden">
             <div class="bs-sidebar hidden-print affix-top">
                 <div class="panel panel-default hidden" id="result_init">
                     <div class="panel-heading"><h4 class="panel-title">Generation time (less is the better, ms)</h4></div>
 
                     <div class="panel-body">
-                        <table class="table" id="table_init">
+                        <table class="table hidden" id="table_init">
                             <thead>
                                 <tr>
-                                    <th style="width: 90%;">Engine</th>
+                                    <th class="name">Engine</th>
                                     <th><b>Avg</b></th>
                                     <th>Min</th>
                                     <th>Max</th>
@@ -97,10 +97,10 @@
                     <div class="panel-heading"><h5 class="panel-title">Render time (less is the better, ms)</h5></div>
 
                     <div class="panel-body">
-                        <table class="table" id="table_render">
+                        <table class="table hidden" id="table_render">
                             <thead>
                             <tr>
-                                <th style="width: 90%;">Engine</th>
+                                <th class="name">Engine</th>
                                 <th><b>Avg</b></th>
                                 <th>Min</th>
                                 <th>Max</th>
@@ -140,10 +140,17 @@
 
         function end(engine, avg_init, min_init, max_init, avg_render, min_render, max_render) {
             engine.chart.stop();
+            if ($('#score_init').children()) {
+                $('#table_init').removeClass('hidden');
+
+            }
+            if ($('#score_render').children()) {
+                $('#table_render').removeClass('hidden');
+            }
             $('#bar_'+engine.id).css('opacity', '0.15');
             $('.panel-warning').removeClass('panel-warning');
-            $('#score_init').append($('<tr><td><b>'+engine.name+'</b></td><td><b>'+avg_init+'</b></td><td>'+min_init+'</td><td>'+max_init+'</td></tr>'));
-            $('#score_render').append($('<tr><td><b>'+engine.name+'</b></td><td><b>'+avg_render+'</b></td><td>'+min_render+'</td><td>'+max_render+'</td></tr>'));
+            $('#score_init').append($('<tr><td class="name"><b>'+engine.name+'</b></td><td><b>'+avg_init+'</b></td><td>'+min_init+'</td><td>'+max_init+'</td></tr>'));
+            $('#score_render').append($('<tr><td class="name"><b>'+engine.name+'</b></td><td><b>'+avg_render+'</b></td><td>'+min_render+'</td><td>'+max_render+'</td></tr>'));
         }
 
         function complete() {
@@ -159,6 +166,8 @@
             $('#process').children().remove();
             $('#score_init').children().remove();
             $('#score_render').children().remove();
+            $('#table_init').addClass('hidden');
+            $('#table_render').addClass('hidden');
             $('#result_init').addClass('hidden');
             $('#result_render').addClass('hidden');
             $.each(ENGINES, function(i, engine){
@@ -174,8 +183,10 @@
                     '</div>'
                 );
                 $('#process').append(engine_panel);
-                $('#result_init').removeClass('hidden');
-                $('#result_render').removeClass('hidden');
+                $('#result_init').removeClass('hidden').removeClass('panel-warning');
+                $('#result_render').removeClass('hidden').removeClass('panel-warning');
+                $('#result_sidebar').removeClass('hidden');
+
             });
             var benchmark = new Benchmark(ENGINES, {'on_start': start, 'on_step': step, 'on_end': end, 'on_complete': complete});
             benchmark.start();
