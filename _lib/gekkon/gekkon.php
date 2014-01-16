@@ -57,7 +57,7 @@ class Gekkon {
         {
             include_once $bin_file;
         }
-        call_user_func($fn_nme, $this);
+        $fn_nme($this);
         $this->tpl_name = $tpl_name_save;
     }
 
@@ -112,7 +112,7 @@ class Gekkon {
 
     function clear_dir($path)
     {
-        if($dh = opendir($path))
+        if(is_dir($path) && $dh = opendir($path))
         {
             while(($file = readdir($dh)) !== false)
             {
