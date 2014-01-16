@@ -51,9 +51,13 @@ class Gekkon {
         }
         $tpl_name_save = $this->tpl_name;
         $this->tpl_name = $tpl_name;
-        include_once $bin_file;
-        $t = $this->fn_name($tpl_name);
-        $t($this);
+        $fn_nme = $this->fn_name($tpl_name);
+
+        if(!function_exists($fn_nme))
+        {
+            include_once $bin_file;
+        }
+        call_user_func($fn_nme, $this);
         $this->tpl_name = $tpl_name_save;
     }
 
