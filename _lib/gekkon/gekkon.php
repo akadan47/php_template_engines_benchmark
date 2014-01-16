@@ -3,6 +3,7 @@
 //version 4.1
 class Gekkon {
 
+    var $version = 4.1;
     var $bin_path;
     var $tpl_path;
     var $gekkon_path;
