@@ -15,7 +15,7 @@ body {
 /* Custom page header */
 .header {
   border-bottom: 0px solid #e5e5e5;
-  margin-bottom: 15px!important;
+  margin-bottom: 8px!important;
 }
 /* Make the masthead heading the same height as the navigation */
 .header h3 {
@@ -161,6 +161,10 @@ th {
         background: darken(#03dc00, 5);
     }
 
+}
+
+hr {
+    margin-top: 0!important;
 }
 
 #result_sidebar {
