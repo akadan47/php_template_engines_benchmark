@@ -17,8 +17,8 @@ body {
 
 /* Make the masthead heading the same height as the navigation */
 .header h3 {
-  margin-top: 0px;
-  display: inline-block; }
+  display: inline-block;
+  padding-left: 0px!important; }
 
 /* Custom page footer */
 .footer {
@@ -95,10 +95,6 @@ th {
 .bs-sidebar .panel-body {
   padding-top: 5px!important;
   padding-bottom: 0!important; }
-
-.panel-chart canvas {
-  width: 500px;
-  height: 77px; }
 
 .progress {
   margin-bottom: 5px!important;

@@ -54,7 +54,7 @@
 
 <div class="container">
 
-    <div class="row">
+    <div class="row header">
         <div class="col-xs-7">
             <h3>Typical page benchmark <br/>for PHP template engines</h3>
         </div>
@@ -168,7 +168,7 @@
                             '<h3 class="panel-title">'+engine.name+' <span class="label label-default pull-right"><a href="'+engine.url+'" target="_blank">HTML</a></span></h3>' +
                         '</div>' +
                         '<div class="panel-body panel-chart">' +
-                            '<canvas id="chart_' + engine.id + '" width="500" height="77"></canvas>' +
+                            '<canvas id="chart_' + engine.id + '" width="524" height="77"></canvas>' +
                             '<div class="progress"><div id="bar_' + engine.id + '" class="progress-bar progress-bar-primary"></div></div>' +
                         '</div>' +
                     '</div>'
