@@ -67,7 +67,7 @@
         <div class="col-md-5">
             <div class="bs-sidebar hidden-print affix-top">
                 <div class="panel panel-default hidden" id="results">
-                    <div class="panel-heading"><h3 class="panel-title">Results (ms)</h3></div>
+                    <div class="panel-heading"><h3 class="panel-title">Results (less is the better, ms)</h3></div>
 
                     <div class="panel-body">
                     <table class="table" id="tablesort">
