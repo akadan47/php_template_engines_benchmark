@@ -1,8 +1,6 @@
 <?php
 
-//version 1.0
-
-
+//version 2.1
 class GekkonCompiler {
 
     function __construct(&$gekkon)
@@ -101,12 +99,24 @@ class GekkonCompiler {
     {
         $rez = array();
         $line = 0;
+        if($this->gekkon->complier_settings['echo_open'] !== $this->gekkon->complier_settings['tag_open'])
+        {
+            $_str = preg_replace('/\\'.$this->gekkon->complier_settings['echo_open'].
+                '([\=\@\$].+)\\'.
+                $this->gekkon->complier_settings['echo_close'].'/Uu',
+                $this->gekkon->complier_settings['tag_open'].'\1'.$this->gekkon->complier_settings['tag_close'],
+                $_str);
+        }
         while($_str != '')
         {
-            $is_tag = preg_match('/\{(\s*([\=\@\$a-z_A-Z]+)(\s*[^\}\n]+)?)\}/us',
-                $_str, $_tag, PREG_OFFSET_CAPTURE);
-            $is_comment = preg_match('/{((#)(.+)#)}/Uus', $_str, $_comment,
-                PREG_OFFSET_CAPTURE);
+            $is_tag = preg_match('/\\'.$this->gekkon->complier_settings['tag_open'].
+                '(\s*([\=\@\$a-z_A-Z]+)(\W.+)?)\\'.
+                $this->gekkon->complier_settings['tag_close'].
+                '/Uu', $_str, $_tag, PREG_OFFSET_CAPTURE);
+            $is_comment = preg_match('/'.
+                $this->gekkon->complier_settings['tag_open'].'((#)(.+)#)'.
+                $this->gekkon->complier_settings['tag_close'].'/Uus', $_str,
+                $_comment, PREG_OFFSET_CAPTURE);
             if(!$is_tag && !$is_comment)
             {
                 $rez[] = array('name' => '<static>', 'content' => $_str);
@@ -207,10 +217,12 @@ class GekkonCompiler {
             $r = array();
             $now = 0;
 
-            preg_match_all('/{\s*'.$_tag['name'].'\b/Us', $_str, $m1,
-                PREG_OFFSET_CAPTURE);
-            preg_match_all('/{\s*\/'.$_tag['name'].'\s*}/Us', $_str, $m2,
-                PREG_OFFSET_CAPTURE);
+            preg_match_all('/'.$this->gekkon->complier_settings['tag_open'].
+                '\s*'.$_tag['name'].'\b/Us', $_str, $m1, PREG_OFFSET_CAPTURE);
+            preg_match_all('/'.$this->gekkon->complier_settings['tag_open'].
+                '\s*\/'.$_tag['name'].'\s*'.
+                $this->gekkon->complier_settings['tag_close'].
+                '/Us', $_str, $m2, PREG_OFFSET_CAPTURE);
 
             foreach($m1[0] as $item)
             {

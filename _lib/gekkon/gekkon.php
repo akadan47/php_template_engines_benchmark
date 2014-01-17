@@ -18,6 +18,11 @@ class Gekkon {
         $this->compiler = false;
         $this->display_errors = ini_get('display_errors') == 'on';
         $this->tpl_name = '';
+        $this->complier_settings = array(
+            'tag_open' => '{',
+            'tag_close' => '}',
+            'echo_open' => '{',
+            'echo_close' => '}');
     }
 
     function register($name, &$data)
