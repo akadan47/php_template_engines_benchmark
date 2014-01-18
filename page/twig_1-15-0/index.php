@@ -9,7 +9,7 @@ $tpl = $is_include ? "main_inc.tpl.twig" : "main.tpl.twig";
 $method = $is_json ? "render" : "display";
 
 $start_init = microtime(true);
-require('../../engines/twig_1.15.0/Autoloader.php');
+require('../../engines/twig_1.15.0/twig/Autoloader.php');
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem('tpl');
 $twig = new Twig_Environment($loader, array('cache' => 'tpl/cache', 'autoescape' => false, 'auto_reload' => false));
