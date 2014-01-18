@@ -3,32 +3,39 @@
     <head>
         <meta charset="utf-8">
         <title>Typical page benchmark for PHP template engines</title>
-        <link rel="stylesheet" href="/_files/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/_files/css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="/_files/css/style.css">
-        <script type="text/javascript" src="/_files/js/jquery-1.10.2.min.js"></script>
-        <script type="text/javascript" src="/_files/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/_files/js/smoothie.js"></script>
-        <script type="text/javascript" src="/_files/js/jquery.tablesorter.min.js"></script>
-        <script type="text/javascript" src="/_files/js/benchmark.js"></script>
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/static/js/smoothie.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
+        <script type="text/javascript" src="/static/js/benchmark.js"></script>
+
         <script type="text/javascript">
-                var ENGINES = [
+            <?php
+                $engines = array();
+
+                if ($handle = opendir('page')) {
+                    while (false !== ($file = readdir($handle)))
                     {
-                        "id": "gekkon",
-                        "name": "Gekkon",
-                        "url": "/gekkon/"
-                    },
-                    {
-                        "id": "smarty",
-                        "name": "Smarty",
-                        "url": "/smarty/"
-                    },
-                    {
-                        "id": "twig",
-                        "name": "Twig",
-                        "url": "/twig/"
+                        if (!in_array($file, array('.', '..')))
+                        {
+
+                            $engine = array(
+                                'id' => strtolower(explode('_', $file)[0]),
+                                'name' => ucfirst(explode('_', $file)[0]),
+                                'version' => str_replace('-','.', explode('_', $file)[1]),
+                                'url' => '/page/'.$file.'/'
+                            );
+                            array_push($engines, $engine);
+                        }
                     }
-                ];
+                    closedir($handle);
+                }
+                echo 'var ENGINES = '.json_encode($engines, JSON_UNESCAPED_SLASHES).';';
+            ?>
+
         </script>
     </head>
     <body>
@@ -49,7 +56,7 @@
                 <div id="sidebar" class="col-xs-5 hidden">
                     <div class="bs-sidebar hidden-print affix-top">
                         <div class="panel panel-default hidden" id="result_init">
-                            <div class="panel-heading"><h4 class="panel-title">Generation time (init & render) <span>less is the better, ms</span></h4></div>
+                            <div class="panel-heading"><h4 class="panel-title">Generation time (init & render) <span class="pull-right">less is the better, ms</span></h4></div>
                             <div class="panel-body">
                                 <table class="table hidden" id="table_init">
                                     <thead>
@@ -67,7 +74,7 @@
                             </div>
                         </div>
                         <div class="panel panel-default hidden" id="result_render">
-                            <div class="panel-heading"><h5 class="panel-title">Render time <span>less is the better, ms</span></h5></div>
+                            <div class="panel-heading"><h5 class="panel-title">Render time <span class="pull-right">less is the better, ms</span></h5></div>
                             <div class="panel-body">
                                 <table class="table hidden" id="table_render">
                                     <thead>
@@ -135,11 +142,11 @@
                         el_table__render.removeClass('hidden');
                     $('#bar_'+engine.id).css('opacity', '0.15');
                     $('.panel-warning').removeClass('panel-warning');
-                    el_score__init.append($('<tr><td class="name"><b>'+engine.name+'</b></td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
-                    el_score__init.append($('<tr><td class="name"><b>'+engine.name+' with includes</b></td><td><b>'+results_includes.init.avg+'</b></td><td>'+results_includes.init.min+'</td><td>'+results_includes.init.max+'</td></tr>'));
+                    el_score__init.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
+                    el_score__init.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +' with includes</b></td><td><b>'+results_includes.init.avg+'</b></td><td>'+results_includes.init.min+'</td><td>'+results_includes.init.max+'</td></tr>'));
 
-                    el_score__render.append($('<tr><td class="name"><b>'+engine.name+'</b></td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
-                    el_score__render.append($('<tr><td class="name"><b>'+engine.name+' with includes</b></td><td><b>'+results_includes.render.avg+'</b></td><td>'+results_includes.render.min+'</td><td>'+results_includes.render.max+'</td></tr>'));
+                    el_score__render.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
+                    el_score__render.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +' with includes</b></td><td><b>'+results_includes.render.avg+'</b></td><td>'+results_includes.render.min+'</td><td>'+results_includes.render.max+'</td></tr>'));
 
                     el_table__init.trigger("update");
                     el_table__render.trigger("update");
@@ -165,12 +172,13 @@
                     el_score__render.children().remove();
                     el_table__render.addClass('hidden');
                     el_result__render.addClass('hidden');
-
+                    $('.headerSortDown').removeClass('headerSortDown');
+                    $('.headerSortUp').removeClass('headerSortUp');
                     $.each(ENGINES, function(i, engine){
                         var engine_panel = $(
                             '<div id="panel_' + engine.id + '" class="panel panel-default">' +
                                 '<div class="panel-heading">' +
-                                    '<h3 class="panel-title">'+engine.name+' <span class="pull-right"><span class="point point-plain"></span> <a href="'+engine.url+'" target="_blank">Plain</a> <span class="point point-includes"></span> <a href="'+engine.url+'?include" target="_blank">Includes</a></span> </h3>' +
+                                    '<h3 class="panel-title">'+engine.name+' '+ engine.version +' <span class="pull-right"><span class="point point-plain"></span> <a href="'+engine.url+'" target="_blank">Plain</a> <span class="point point-includes"></span> <a href="'+engine.url+'?include" target="_blank">Includes</a></span> </h3>' +
                                 '</div>' +
                                 '<div class="panel-body panel-chart">' +
                                     '<canvas id="chart_' + engine.id + '" width="524" height="77"></canvas>' +

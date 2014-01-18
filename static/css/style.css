@@ -91,7 +91,8 @@ table.table {
       margin-right: 0; }
   .panel-title span {
     font-size: 12px;
-    font-weight: normal; }
+    font-weight: normal;
+    line-height: 20px; }
 
 .panel-chart {
   padding: 5px 5px 0 5px; }

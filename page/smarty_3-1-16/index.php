@@ -1,5 +1,5 @@
 <?php
-require('../data.php');
+require('../../data.php');
 
 $is_json = isset($_GET['json']);
 $is_include = isset($_GET['include']);
@@ -9,7 +9,7 @@ $tpl = $is_include ? "main_inc.tpl" : "main.tpl";
 $method = $is_json ? "fetch" : "display";
 
 $start_init = microtime(true);
-require('../_lib/smarty/Smarty.class.php');
+require('../../engines/smarty_3.1.16/Smarty.class.php');
 $smarty = new Smarty();
 $smarty->template_dir = './tpl';
 $smarty->compile_dir = './tpl/cache';

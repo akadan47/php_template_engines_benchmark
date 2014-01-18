@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>{$shop_name|capitalize}</title>
-    <link rel="stylesheet" href="/_files/css/page.css">
+    <link rel="stylesheet" href="/static/css/page.css">
 </head>
 <body>
 <div id="layout">
