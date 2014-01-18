@@ -59,19 +59,39 @@ body {
   cursor: pointer; }
 
 table.table {
+  margin-top: -1px;
   margin-bottom: 0px!important; }
   table.table thead {
     margin-bottom: 15px;
     display: table-row-group; }
 
+.point {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  line-height: 12px;
+  border-radius: 2.5px;
+  background: #e8e8e8; }
+
+.point-plain {
+  background: #32cc51; }
+
+.point-includes {
+  background: #40b1e9; }
+
 .panel-title {
   font-size: 14px; }
-
-.panel-title .label-default {
-  background: #e8e8e8!important; }
-  .panel-title .label-default a {
+  .panel-title a {
+    font-weight: normal;
+    font-size: 11px;
+    margin-right: 15px;
     color: #777!important;
-    text-decoration: none!important; }
+    text-decoration: underline; }
+    .panel-title a:last-child {
+      margin-right: 0; }
+  .panel-title span {
+    font-size: 12px;
+    font-weight: normal; }
 
 .panel-chart {
   padding: 5px 5px 0 5px; }
@@ -82,25 +102,33 @@ canvas {
 th, td {
   font-size: 13px;
   font-weight: normal; }
-  th:first-child, td:first-child {
-    padding-left: 0!important; }
-  th:last-child, td:last-child {
-    padding-right: 0!important; }
 
 td {
   border-top: 1px dotted #ddd!important;
-  text-align: right; }
+  text-align: right;
+  padding-right: 5px!important; }
   td.name {
-    text-align: left; }
+    text-align: left;
+    padding-left: 5px!important; }
 
 th {
   border-bottom: 1px solid #777!important;
-  padding-bottom: 2px!important;
-  color: #999;
+  padding-bottom: 4px!important;
+  padding-top: 5px!important;
+  color: #555;
   cursor: pointer!important;
   text-align: right; }
   th.name {
     text-align: left; }
+  th.headerSortDown, th.headerSortUp {
+    background: #e8e8e8; }
+  th span {
+    border-bottom: 1px dotted #ddd; }
+  th:last-child {
+    padding-left: 5px!important; }
+
+.panel-warning th.headerSortDown, .panel-warning th.headerSortUp {
+  background: #faf2cd; }
 
 .bs-sidebar .panel-body {
   padding-top: 0px!important;
@@ -110,14 +138,18 @@ th {
 .progress {
   margin-bottom: 5px!important;
   height: 3px;
-  border-radius: 0!important; }
+  border-radius: 0!important;
+  margin-top: -4px; }
   .progress .progress-bar {
-    background: #03c300; }
+    -webkit-transition: width 1s ease-in-out;
+    -moz-transition: width 1s ease-in-out;
+    -o-transition: width 1s ease-in-out;
+    transition: width 1s ease-in-out; }
 
 hr {
   margin-top: 0!important; }
 
-#result_sidebar {
+#sidebar {
   padding-top: 20px;
   background: #f5f5f5; }
 
