@@ -13,7 +13,7 @@
     <td>
         <!-- set $counter = 1 -->
         <!--foreach from=$property.value item=$value-->
-        {$value}<!--if $counter != $property.value.count() -->,<!--else-->.<!--/if-->
+        {$value}<!--if $counter != $property.value.count() -->, <!--else-->.<!--/if-->
         <!-- set $counter = $counter + 1 -->
         <!--/foreach-->
     </td>

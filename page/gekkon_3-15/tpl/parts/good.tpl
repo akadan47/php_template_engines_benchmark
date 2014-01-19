@@ -2,7 +2,7 @@
 <!-- set $title = $good.vendor.name . " " . $good.name -->
 <h1>{$title} <!--if $good.model-->({$good.model})<!--/if--></h1>
 
-<span><b>Color:</b> {$good.color}, <b>Warranty:</b> {$good.warranty}, <b>Country:</b> {$good.country}</span>
+<span><b>Color: </b> {$good.color}, <b>Warranty: </b> {$good.warranty}, <b>Country: </b> {$good.country}</span>
 
 <br/>
 <br/>

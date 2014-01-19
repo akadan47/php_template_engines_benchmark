@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- nowarp -->
 <html>
     <head>
         <meta charset="utf-8">
@@ -76,7 +77,9 @@
                             <h1>{$title} <!--if $good.model-->({$good.model})<!--/if--></h1>
 
                             <span>
-                                <b>Color:</b> {$good.color}, <b>Warranty:</b> {$good.warranty}, <b>Country:</b> {$good.country}
+                                <b>Color: </b>{$good.color}, <b>Warranty: </b>
+                                {$good.warranty}, <b>Country: </b>
+                                {$good.country}
                             </span>
 
                             <br/>
@@ -155,7 +158,7 @@
                                                             <td>
                                                                 <!-- set $counter = 1 -->
                                                                 <!--foreach from=$property.value item=$value-->
-                                                                    {$value}<!--if $counter != $property.value.count() -->,<!--else-->.<!--/if-->
+                                                                    {$value}<!--if $counter != $property.value.count() -->, <!--else-->.<!--/if-->
                                                                     <!-- set $counter = $counter + 1 -->
                                                                 <!--/foreach-->
                                                             </td>
@@ -256,3 +259,4 @@
         </div>
     </body>
 </html>
+<!-- /nowarp -->
