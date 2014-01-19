@@ -9,7 +9,7 @@ require('../../engines/smarty_2.6.28/Smarty.class.php');
 $smarty = new Smarty();
 $smarty->template_dir = './tpl';
 $smarty->compile_dir = './tpl/cache';
-if ($is_clear) $smarty->clearCache($tpl);
+if ($is_clear) $smarty->clear_cache($tpl);
 $start_render = microtime(true);
 $smarty->assign($_DATA);
 $smarty->$method($tpl);
