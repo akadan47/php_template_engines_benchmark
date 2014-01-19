@@ -14,16 +14,15 @@ var $plugin;
 var $ukey;
 
 //constructor
-function Gekkon($path)
+function Gekkon($bin_path, $tpl_path)
 {
-$this->template_path=$path.'tpl/';
-$this->bin_path=$path.'tpl_bin/';
-$this->gekkon_path=$path.'Gekkon/';
-
-$this->data=array();
-$this->plugin=array();
-$this->ukey=0;
-$this->data['ukey']=&$this->ukey;
+    $this->bin_path = $bin_path;
+    $this->template_path = $tpl_path;
+    $this->gekkon_path = dirname(__file__).'/';
+    $this->data=array();
+    $this->plugin=array();
+    $this->ukey=0;
+    $this->data['ukey']=&$this->ukey;
 }
 
 function get_ukey()
