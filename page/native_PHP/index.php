@@ -1,7 +1,6 @@
 <?php
 require('../../data.php');
 require('../../common.php');
-define("GEKKON_TRACE", 0);
 
 $file = $is_include ? "main_inc.php" : "main.php";
 
