@@ -14,6 +14,7 @@
 
         <script type="text/javascript">
             <?php
+                error_reporting(0);
                 $engines = array();
                 if ($handle = opendir('page')) {
                     while (false !== ($file = readdir($handle)))
