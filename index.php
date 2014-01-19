@@ -15,15 +15,13 @@
         <script type="text/javascript">
             <?php
                 $engines = array();
-
                 if ($handle = opendir('page')) {
                     while (false !== ($file = readdir($handle)))
                     {
-                        if (!in_array($file, array('.', '..')))
+                        if (!in_array($file, array('.', '..', '.DS_Store', 'Thumbs.db')))
                         {
-
                             $engine = array(
-                                'id' => strtolower(explode('_', $file)[0]),
+                                'id' => strtolower(explode('_', $file)[0]).str_replace('-','', explode('_', $file)[1]),
                                 'name' => ucfirst(explode('_', $file)[0]),
                                 'version' => str_replace('-','.', explode('_', $file)[1]),
                                 'url' => '/page/'.$file.'/'
