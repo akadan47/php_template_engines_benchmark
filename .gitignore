@@ -1,7 +1,7 @@
 .idea/
-**tpl_bin
-**cache
-!**cache/readme.txt
+***tpl_bin
+***cache
+!***cache/readme.txt
 nbproject
 *.bak
 *.log
