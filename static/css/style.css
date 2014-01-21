@@ -86,7 +86,8 @@ table.table {
     background: #40b1e9; }
 
 .panel-title {
-  font-size: 14px; }
+  font-size: 14px;
+  font-weight: normal!important; }
   .panel-title .label {
     margin-left: 20px;
     background: #ddd; }

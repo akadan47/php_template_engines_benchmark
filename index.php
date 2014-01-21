@@ -224,9 +224,9 @@
                         el_table__render.removeClass('hidden');
                     $('#bar_'+engine.id).css('width', "100%").css('opacity', '0.15');
                     $('.panel-warning').removeClass('panel-warning');
-                    el_score__time.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.time.avg+'</b></td><td>'+results.time.min+'</td><td>'+results.time.max+'</td></tr>'));
-                    el_score__init.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
-                    el_score__render.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
+                    el_score__time.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.time.avg+'</b></td><td>'+results.time.min+'</td><td>'+results.time.max+'</td></tr>'));
+                    el_score__init.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
+                    el_score__render.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
 
                     var sorting = [[1,0]];
                     el_table__time.trigger('update').trigger("sorton", [sorting]);
@@ -313,7 +313,7 @@
                         var engine_panel = $(
                             '<div id="panel_' + engine.id + '" class="panel panel-default">' +
                                 '<div class="panel-heading">' +
-                                    '<h3 class="panel-title">'+engine.name+' '+ engine.version +' <span class="pull-right label label-default"><a target="_blank" href="'+engine.url+'">HTML</a></span> <span class="pull-right legend"><span class="point point-init"></span>initialization <span class="point point-render"></span>render</span> </h3>' +
+                                    '<h3 class="panel-title"><b>'+engine.name+'</b> '+ engine.version +' <span class="pull-right label label-default"><a target="_blank" href="'+engine.url+'">HTML</a></span> <span class="pull-right legend"><span class="point point-init"></span>initialization <span class="point point-render"></span>render</span> </h3>' +
                                 '</div>' +
                                 '<div class="panel-body panel-chart">' +
                                     '<canvas id="chart_' + engine.id + '" width="605" height="77"></canvas>' +
