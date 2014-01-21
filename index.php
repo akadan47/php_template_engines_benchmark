@@ -45,7 +45,7 @@
             <div class="row">
                 <div id="choose" class="well well-sm">
 
-                    <div class="progress active progress-striped hidden" id="progress_bar_wrap"><div id="progress_bar" class="progress-bar progress-bar-success"></div></div>
+                    <div class="progress active progress-striped hidden" id="progress_bar_wrap"><div id="progress_bar" class="progress-bar progress-bar-primary"></div></div>
 
                     <div style="text-align: center" id="toolbar">
                         <div class="btn-group">
@@ -319,7 +319,7 @@
                                 '</div>' +
                                 '<div class="panel-body panel-chart">' +
                                     '<canvas id="chart_' + engine.id + '" width="605" height="77"></canvas>' +
-                                    '<div class="progress active  progress-striped"><div id="bar_' + engine.id + '" class="progress-bar progress-bar-warning"></div></div>' +
+                                    '<div class="progress active  progress-striped"><div id="bar_' + engine.id + '" class="progress-bar progress-bar-primary"></div></div>' +
                                 '</div>' +
                             '</div>'
                         );
