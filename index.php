@@ -29,6 +29,8 @@
                                 'url' => '/page/'.$file.'/'
                             );
                             array_push($engines, $engine);
+//                            $cache_dir = './page/'.$file.'/tpl/cache/'.'<br>';
+//                            chmod($cache_dir, 0644);
                         }
                     }
                     closedir($handle);
