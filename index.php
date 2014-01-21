@@ -77,7 +77,7 @@
                 <div id="sidebar" class="col-xs-4 hidden">
                     <div class="bs-sidebar hidden-print affix-top">
                         <div class="panel panel-default hidden" id="result_time">
-                            <div class="panel-heading"><h4 class="panel-title">Total generation time <span class="pull-right unit">ms</span></h4></div>
+                            <div class="panel-heading"><h4 class="panel-title"><b>Total generation time</b> <span class="pull-right unit">ms</span></h4></div>
                             <div class="panel-body">
                                 <table class="table hidden" id="table_time">
                                     <thead>
