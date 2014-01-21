@@ -6,8 +6,10 @@
         <link rel="stylesheet" href="/static/css/bootstrap.min.css">
         <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css">
         <link rel="stylesheet" href="/static/css/style.css">
+
         <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/static/js/simple-slider.min.js"></script>
         <script type="text/javascript" src="/static/js/smoothie.js"></script>
         <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
         <script type="text/javascript" src="/static/js/benchmark.js"></script>
@@ -56,6 +58,10 @@
                         <?php foreach ($engines as $engine) { ?>
                             <span class="checkbox"><label><input type="checkbox" checked="checked" id="engine_<?php echo $engine["id"] ?>" data-id="<?php echo $engine["id"] ?>" data-name="<?php echo $engine["name"] ?>" data-version="<?php echo $engine["version"] ?>" data-url="<?php echo $engine["url"] ?>"> <b><?php echo $engine["name"] ?></b> <?php echo $engine["version"] ?></label></span>
                         <?php } ?>
+                    </div>
+                    <div id="slider_wrap">
+                        <span id="slider_value"></span>
+                        <input id="slider" type="text" value="500">
                     </div>
 
                     <div style="text-align: center">
@@ -146,12 +152,13 @@
                 var el_table__init = $('#table_init');
                 var el_result__init = $('#result_init');
 
-
-
                 var el_score__render = $('#score_render');
                 var el_table__render = $('#table_render');
                 var el_result__render = $('#result_render');
 
+                var el_slider_wrap = $('#slider_wrap');
+                var el_slider = $('#slider');
+                var el_slider_value = $('#slider_value');
 
                 el_table__time.tablesorter();
                 el_table__init.tablesorter();
@@ -160,6 +167,31 @@
                 var el_main_progress = $('#progress_bar_wrap');
                 var el_main_progress_bar = $('#progress_bar');
 
+                $("#checkboxes input[type='checkbox']").on('click', function(){
+                    check_buttons();
+                });
+
+                el_slider.on("slider:ready slider:changed", function (event, data) {
+                    el_slider_value.html(data.value + ' requests');
+                });
+
+                el_slider.simpleSlider({
+                    'range': [50,1000],
+                    'step': 50,
+                    'snap': true,
+                    'highlight': true,
+                    'theme': 'volume'
+                });
+
+                $('#check_all').on('click', function() {
+                    $("#checkboxes input[type='checkbox']").prop('checked', 'checked');
+                    check_buttons();
+                });
+
+                $('#uncheck_all').on('click', function() {
+                    $("#checkboxes input[type='checkbox']").removeAttr('checked');
+                    check_buttons();
+                });
 
                 function on_start(engine){
                     engine.line_time = new TimeSeries();
@@ -196,16 +228,10 @@
                     el_score__init.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
                     el_score__render.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
 
-
-
-
-
                 }
 
                 function on_finish() {
                     var sorting = [[1,0]];
-
-
 
                     el_table__time.trigger('update').trigger("sorton", [sorting]);
                     el_result__time.addClass('panel-warning');
@@ -221,9 +247,9 @@
 
                     el_main_progress_bar.css('width', '0%');
                     el_main_progress.addClass('hidden');
+                    el_slider_wrap.removeClass('hidden');
                     el_start__button.text('Restart Benchmark!').removeAttr('disabled');
                 }
-
 
                 function check_buttons() {
                     var checked = $("#checkboxes input[type='checkbox']:checked").length;
@@ -242,20 +268,6 @@
                     }
                 }
 
-                $("#checkboxes input[type='checkbox']").on('click', function(){
-                    check_buttons();
-                });
-
-                $('#check_all').on('click', function() {
-                    $("#checkboxes input[type='checkbox']").prop('checked', 'checked');
-                    check_buttons();
-                });
-
-                $('#uncheck_all').on('click', function() {
-                    $("#checkboxes input[type='checkbox']").removeAttr('checked');
-                    check_buttons();
-                });
-
                 check_buttons();
 
                 el_start__button.on('click', function(){
@@ -273,6 +285,8 @@
                     el_score__render.children().remove();
                     el_table__render.addClass('hidden');
                     el_result__render.addClass('hidden');
+
+                    el_slider_wrap.addClass('hidden');
 
                     $.tablesorter.clearTableBody(el_table__time);
                     $.tablesorter.clearTableBody(el_table__render);
@@ -297,8 +311,6 @@
                                }
                            )
                     });
-
-
                     $.each(checked_engines, function(i, engine){
                         var engine_panel = $(
                             '<div id="panel_' + engine.id + '" class="panel panel-default">' +
@@ -318,15 +330,17 @@
 
                         el_sidebar.removeClass('hidden');
                     });
+
                     var benchmark = new Benchmark(checked_engines, {
                         'on_start': on_start,
                         'on_update': on_update,
                         'on_complete': on_complete,
                         'on_finish': on_finish,
-                        'requests': 1000
+                        'requests': el_slider.val()
                     });
                     benchmark.start();
                 });
+
             });
         </script>
     </body>
