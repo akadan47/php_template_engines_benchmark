@@ -267,8 +267,6 @@
                     el_table__render.addClass('hidden');
                     el_result__render.addClass('hidden');
 
-
-
                     el_main_progress.removeClass('hidden');
 
                     $('#toolbar').addClass('hidden');
@@ -314,7 +312,7 @@
                         'on_update': on_update,
                         'on_complete': on_complete,
                         'on_finish': on_finish,
-                        'requests': 10
+                        'requests': 1000
                     });
                     benchmark.start();
                 });
