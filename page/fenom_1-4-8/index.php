@@ -2,6 +2,9 @@
 require('../../data.php');
 require('../../common.php');
 
+$method = $is_json ? "fetch" : "display";
+
+$start = microtime(true);
 function __autoload($className){
     $className = ltrim($className, '\\');
     $fileName  = '';
@@ -14,10 +17,6 @@ function __autoload($className){
     $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
     require '../../engines/fenom_1.4.8/'.$fileName;
 }
-
-$method = $is_json ? "fetch" : "display";
-
-$start = microtime(true);
 $fenom = Fenom::factory('./tpl', './tpl/cache');
 $fenom->setOptions(array(
     "auto_trim" => true,
