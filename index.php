@@ -23,7 +23,7 @@
                         if (!in_array($file, array('.', '..', '.DS_Store', 'Thumbs.db')))
                         {
                             $engine = array(
-                                'id' => strtolower(explode('_', $file)[0]).str_replace('-','', explode('_', $file)[1]),
+                                'id' => str_replace(' ', '_', strtolower(explode('_', $file)[0])).str_replace('-','', explode('_', $file)[1]),
                                 'name' => ucfirst(explode('_', $file)[0]),
                                 'version' => str_replace('-','.', explode('_', $file)[1]),
                                 'url' => '/page/'.$file.'/'
