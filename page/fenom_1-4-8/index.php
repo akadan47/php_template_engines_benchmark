@@ -17,16 +17,18 @@ function __autoload($className){
 
 $method = $is_json ? "fetch" : "display";
 
-$start_init = microtime(true);
+$start = microtime(true);
 $fenom = Fenom::factory('./tpl', './tpl/cache');
 $fenom->setOptions(array(
     "auto_trim" => true,
     "auto_reload" => true,
 ));
 if ($is_clear) $fenom->clearAllCompiles();
+$time_init = microtime(true)-$start;
 $start_render = microtime(true);
-$fenom->$method($tpl, $_DATA);
-$time_init = microtime(true)-$start_init;
+$fenom->$method("main.tpl", $_DATA);
+
+$time = microtime(true)-$start;
 $time_render = microtime(true)-$start_render;
 
-print_time($is_json, $time_init, $time_render);
+print_time($is_json, $time, $time_init, $time_render);

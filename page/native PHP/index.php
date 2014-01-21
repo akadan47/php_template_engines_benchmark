@@ -2,10 +2,10 @@
 require('../../data.php');
 require('../../common.php');
 
-$file = $is_include ? "main_inc.php" : "main.php";
 
-$start_init = microtime(true);
-$code = file_get_contents("tpl/".$file);
+$start = microtime(true);
+$code = file_get_contents("tpl/main.php");
+$time_init = microtime(true)-$start;
 $start_render = microtime(true);
 $data = $_DATA;
 if ($is_json) {
@@ -16,7 +16,7 @@ if ($is_json) {
 } else {
     eval(' ?>'.$code.'<?php ');
 }
-$time_init = microtime(true)-$start_init;
+$time = microtime(true)-$start;
 $time_render = microtime(true)-$start_render;
 
-print_time($is_json, $time_init, $time_render);
+print_time($is_json, $time, $time_init, $time_render);

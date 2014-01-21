@@ -66,34 +66,42 @@ table.table {
     margin-bottom: 15px;
     display: table-row-group; }
 
-.point {
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  line-height: 12px;
-  border-radius: 2.5px;
-  background: #e8e8e8; }
-
-.point-plain {
-  background: #32cc51; }
-
-.point-includes {
-  background: #40b1e9; }
+.legend {
+  font-size: 11px!important;
+  color: #777;
+  font-weight: normal;
+  line-height: 18px; }
+  .legend .point {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    line-height: 12px;
+    border-radius: 3px;
+    background: #e8e8e8;
+    margin-right: 2px;
+    margin-left: 20px; }
+  .legend .point-render {
+    background: #32cc51; }
+  .legend .point-init {
+    background: #40b1e9; }
 
 .panel-title {
   font-size: 14px; }
-  .panel-title a {
-    font-weight: normal;
-    font-size: 11px;
-    margin-right: 15px;
-    color: #777!important;
-    text-decoration: underline; }
-    .panel-title a:last-child {
-      margin-right: 0; }
-  .panel-title span {
+  .panel-title .label {
+    margin-left: 20px;
+    background: #ddd; }
+    .panel-title .label a {
+      font-weight: normal;
+      font-size: 11px;
+      margin-right: 15px;
+      text-decoration: underline; }
+      .panel-title .label a:last-child {
+        margin-right: 0; }
+  .panel-title .unit {
+    line-height: 18px;
     font-size: 12px;
     font-weight: normal;
-    line-height: 20px; }
+    color: #777; }
 
 .panel-chart {
   padding: 5px 5px 0 5px; }
@@ -138,17 +146,23 @@ th {
   min-height: 35px; }
 
 .progress {
+  border-radius: 0!important; }
+
+.panel-chart .progress {
   margin-bottom: 5px!important;
   height: 3px;
-  border-radius: 0!important;
   margin-top: -4px; }
+
+.progress-bar {
+  -webkit-transition: width 0.2s ease!important;
+  transition: width 0.2s ease!important; }
+
+#progress_bar_wrap {
+  background: #eee!important;
+  margin-bottom: 10px; }
 
 hr {
   margin-top: 0!important; }
-
-#sidebar {
-  padding-top: 20px;
-  background: #f5f5f5; }
 
 #start {
   margin-bottom: 0; }

@@ -87,45 +87,62 @@ table.table {
     margin-bottom: 0px!important;
 }
 
-.point {
-    display: inline-block;
-    width: 5px;
-    height: 5px;
-    line-height: 12px;
-    border-radius: 2.5px;
-    background: #e8e8e8;
+.legend {
+    font-size: 11px!important;
+    color: #777;
+    font-weight: normal;
+    line-height: 18px;
+
+    .point {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        line-height: 12px;
+        border-radius: 3px;
+        background: #e8e8e8;
+        margin-right: 2px;
+        margin-left: 20px;
+    }
+
+    .point-render {
+        background: #32cc51;
+    }
+
+    .point-init {
+        background: #40b1e9;
+    }
 }
 
 
-.point-plain {
-    background: #32cc51;
-}
-
-.point-includes {
-    background: #40b1e9;
-}
 
 .panel-title {
     font-size: 14px;
 
-    a {
+    .label {
+        margin-left: 20px;
+        background: #ddd;
 
-        font-weight: normal;
-        font-size: 11px;
-        margin-right: 15px;
-        color: #777!important;
-        text-decoration: underline;
+        a {
+            font-weight: normal;
+            font-size: 11px;
+            margin-right: 15px;
 
-        &:last-child {
-            margin-right: 0;
+            text-decoration: underline;
+
+            &:last-child {
+                margin-right: 0;
+            }
         }
+
     }
 
-    span {
+    .unit {
+        line-height: 18px;
         font-size: 12px;
         font-weight: normal;
-        line-height: 20px;
+        color: #777;
     }
+
 }
 
 
@@ -197,38 +214,50 @@ th {
     min-height: 35px;
 }
 
-
-
-.panel-chart canvas {
-
+.progress {
+    border-radius: 0!important;
 }
 
-.progress {
-    margin-bottom: 5px!important;
-    height: 3px;
-    border-radius: 0!important;
-    margin-top: -4px;
+.panel-chart {
+    .progress {
+        margin-bottom: 5px!important;
+        height: 3px;
 
-    .progress-bar {
-        //background: darken(#03dc00, 5);
+        margin-top: -4px;
+
+
 
     }
-
 }
+
+.progress-bar {
+    //background: darken(#03dc00, 5);
+    -webkit-transition: width 0.2s ease!important;
+    transition: width 0.2s ease!important;
+}
+
+#progress_bar_wrap {
+    background: #eee!important;
+    margin-bottom: 10px;
+}
+
+
+
 
 hr {
     margin-top: 0!important;
 }
 
 #sidebar {
-    padding-top: 20px;
-    background: #f5f5f5;
+    //padding-top: 20px;
+    //background: #f5f5f5;
 }
 
 #start {
     //margin-top: 25px;
     margin-bottom: 0;
 }
+
 
 
 #choose {

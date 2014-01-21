@@ -10,15 +10,16 @@ function Benchmark(engines, options) {
     $.extend(this.options, options);
 
     this.engines = engines.slice(0);
+    this.engines_count = engines.length;
     this.request_count = this.options.requests;
+    this.all_request_count = (this.options.requests * this.engines_count);
+    //this.on_every = function(x){return self.request_count % x === 0};
 
-    this.init = [];
-    this.init_includes = [];
-    this.render = [];
-    this.render_includes = [];
+    this.time = [];
+    this.time_init = [];
+    this.time_render = [];
 
     this.is_first = true;
-    this.is_include = function(){return self.request_count % 2 === 0};
 
     var self = this;
 
@@ -31,18 +32,23 @@ function Benchmark(engines, options) {
         return (sum / arr.length);
     }
 
-    function get_results (init, render) {
+    function get_results (time, init, render) {
         var result;
         result = {
+            'time': {
+                'avg': (average(time) * 1000).toFixed(2),
+                'min': (Math.min.apply({}, time) * 1000).toFixed(2),
+                'max': (Math.max.apply({}, time) * 1000).toFixed(2)
+            },
             'init': {
                 'avg': (average(init) * 1000).toFixed(2),
                 'min': (Math.min.apply({}, init) * 1000).toFixed(2),
-                'max': (Math.max.apply({}, init) * 1000).toFixed(2),
+                'max': (Math.max.apply({}, init) * 1000).toFixed(2)
             },
             'render': {
                 'avg': (average(render) * 1000).toFixed(2),
                 'min': (Math.min.apply({}, render) * 1000).toFixed(2),
-                'max': (Math.max.apply({}, render) * 1000).toFixed(2),
+                'max': (Math.max.apply({}, render) * 1000).toFixed(2)
             }
         };
         return result;
@@ -55,8 +61,6 @@ function Benchmark(engines, options) {
             };
             if (self.is_first)
                 params['clear'] = true;
-            if (self.is_include())
-                params['include'] = true;
             $.ajax({
                 type: 'GET',
                 data: params,
@@ -64,48 +68,50 @@ function Benchmark(engines, options) {
                 dataType: 'json',
                 async: 'false',
                 success: function(json) {
+                    var time = json['time'];
                     var time_init = json['time_init'];
                     var time_render = json['time_render'];
                     if (!self.is_first) {
-                        if(self.is_include()){
-                            self.init_includes.push(time_init);
-                            self.render_includes.push(time_render);
-                        } else {
-                            self.init.push(time_init);
-                            self.render.push(time_render);
-                        }
+                        self.time.push(time);
+                        self.time_init.push(time_init);
+                        self.time_render.push(time_render);
                     } else {
                         self.is_first = false;
                         self.options.on_start(self.engines[0]);
                     }
-                    var percent = Math.round(((self.options.requests - self.request_count)*100)/self.options.requests).toFixed(1)
+                    var percent = Math.round(((self.options.requests - self.request_count)*100)/self.options.requests).toFixed(1);
+                    var main_percent = Math.round((((self.options.requests * self.engines_count) - self.all_request_count)*100)/(self.options.requests * self.engines_count)).toFixed(1);
+
                     self.options.on_update(
                         self.engines[0],
-                        self.is_include(),
-                        (time_init*1000).toFixed(4),
+                        (time * 1000).toFixed(4),
+                        (time_init * 1000).toFixed(4),
                         (time_render*1000).toFixed(4),
-                        percent
+                        percent,
+                        main_percent
                     );
+
+
                     self.request_count -= 1;
+                    self.all_request_count -= 1;
                     bench();
                 },
                 error: bench
             });
         } else {
-            var results = get_results(self.init, self.render);
-            var results_includes = get_results(self.init_includes, self.render_includes);
-            self.options.on_complete(self.engines[0], results, results_includes);
+            var results = get_results(self.time, self.time_init, self.time_render);
+            self.options.on_complete(self.engines[0], results);
             self.engines.shift();
-            self.init = [];
-            self.init_includes = [];
-            self.render = [];
-            self.render_includes = [];
+            self.time = [];
+            self.time_init = [];
+            self.time_render = [];
             self.is_first = true;
             if (self.engines.length) {
                 self.request_count = self.options.requests;
                 bench();
             } else {
                 self.options.on_finish();
+                self.engines = [];
             }
         }
     }
