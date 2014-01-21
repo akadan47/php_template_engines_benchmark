@@ -323,7 +323,7 @@
                         'on_update': on_update,
                         'on_complete': on_complete,
                         'on_finish': on_finish,
-                        'requests': 10
+                        'requests': 1000
                     });
                     benchmark.start();
                 });
