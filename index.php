@@ -228,18 +228,16 @@
                     el_score__init.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
                     el_score__render.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
 
+                    var sorting = [[1,0]];
+                    el_table__time.trigger('update').trigger("sorton", [sorting]);
+                    el_table__init.trigger('update').trigger("sorton", [sorting]);
+                    el_table__render.trigger('update').trigger("sorton", [sorting]);
                 }
 
                 function on_finish() {
-                    var sorting = [[1,0]];
 
-                    el_table__time.trigger('update').trigger("sorton", [sorting]);
                     el_result__time.addClass('panel-warning');
-
-                    el_table__init.trigger('update').trigger("sorton", [sorting]);
                     el_result__init.addClass('panel-warning');
-
-                    el_table__render.trigger('update').trigger("sorton", [sorting]);
                     el_result__render.addClass('panel-warning');
 
                     $('#toolbar').removeClass('hidden');
