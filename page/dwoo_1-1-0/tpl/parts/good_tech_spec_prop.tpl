@@ -11,7 +11,7 @@
         <td>{$property.name|ucfirst}</td>
         <td>
             {foreach from=$property.value item=value name=loop}
-                {$value}{if !$smarty.foreach.loop.last}, {else}.{/if}
+                {$value}{if !$dwoo.foreach.loop.last}, {else}.{/if}
             {/foreach}
         </td>
     {/if}

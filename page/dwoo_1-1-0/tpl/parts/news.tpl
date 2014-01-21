@@ -10,7 +10,7 @@
                     <span class="tags">
                         Tags:
                         {foreach from=$article.tags item=tag name=loop}
-                            <span>{$tag}{if !$smarty.foreach.loop.last}, {else}.{/if}</span>
+                            <span>{$tag}{if !$dwoo.foreach.loop.last}, {else}.{/if}</span>
                         {/foreach}
                     </span>
                     <span>Comments ({$article.comments_count})</span>
