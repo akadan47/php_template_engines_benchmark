@@ -130,14 +130,14 @@ th {
   text-align: right; }
   th.name {
     text-align: left; }
-  th.headerSortDown, th.headerSortUp {
+  th.tablesorter-headerDesc, th.tablesorter-headerAsc {
     background: #e8e8e8; }
   th span {
     border-bottom: 1px dotted #ddd; }
   th:last-child {
     padding-left: 5px!important; }
 
-.panel-warning th.headerSortDown, .panel-warning th.headerSortUp {
+.panel-warning th.tablesorter-headerDesc, .panel-warning th.tablesorter-headerAsc {
   background: #faf2cd; }
 
 .bs-sidebar .panel-body {

@@ -9,7 +9,7 @@
         <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/static/js/smoothie.js"></script>
-        <script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
         <script type="text/javascript" src="/static/js/benchmark.js"></script>
 
             <?php
@@ -152,9 +152,10 @@
                 var el_table__render = $('#table_render');
                 var el_result__render = $('#result_render');
 
-                el_score__time.tablesorter();
-                el_score__init.tablesorter();
-                el_score__render.tablesorter();
+
+                el_table__time.tablesorter();
+                el_table__init.tablesorter();
+                el_table__render.tablesorter();
 
                 var el_main_progress = $('#progress_bar_wrap');
                 var el_main_progress_bar = $('#progress_bar');
@@ -195,18 +196,24 @@
                     el_score__init.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
                     el_score__render.append($('<tr><td class="name"><b>'+engine.name+' '+ engine.version +'</b></td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
 
+
+
+
+
                 }
 
                 function on_finish() {
                     var sorting = [[1,0]];
 
-                    el_table__time.trigger("updateAll").trigger("sorton",[sorting]);
+
+
+                    el_table__time.trigger('update').trigger("sorton", [sorting]);
                     el_result__time.addClass('panel-warning');
 
-                    el_table__init.trigger("updateAll").trigger("sorton",[sorting]);
+                    el_table__init.trigger('update').trigger("sorton", [sorting]);
                     el_result__init.addClass('panel-warning');
 
-                    el_table__render.trigger("updateAll").trigger("sorton",[sorting]);
+                    el_table__render.trigger('update').trigger("sorton", [sorting]);
                     el_result__render.addClass('panel-warning');
 
                     $('#toolbar').removeClass('hidden');
@@ -267,6 +274,10 @@
                     el_table__render.addClass('hidden');
                     el_result__render.addClass('hidden');
 
+                    $.tablesorter.clearTableBody(el_table__time);
+                    $.tablesorter.clearTableBody(el_table__render);
+                    $.tablesorter.clearTableBody(el_table__init);
+
                     el_main_progress.removeClass('hidden');
 
                     $('#toolbar').addClass('hidden');
@@ -312,7 +323,7 @@
                         'on_update': on_update,
                         'on_complete': on_complete,
                         'on_finish': on_finish,
-                        'requests': 1000
+                        'requests': 10
                     });
                     benchmark.start();
                 });

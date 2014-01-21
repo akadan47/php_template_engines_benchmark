@@ -189,7 +189,7 @@ th {
 
     }
 
-    &.headerSortDown, &.headerSortUp {
+    &.tablesorter-headerDesc, &.tablesorter-headerAsc {
         background: #e8e8e8;
     }
 
@@ -203,7 +203,7 @@ th {
 }
 
 .panel-warning th {
-    &.headerSortDown, &.headerSortUp {
+    &.tablesorter-headerDesc, &.tablesorter-headerAsc {
         background: #faf2cd;
     }
 }
