@@ -14,7 +14,7 @@
 
         <script type="text/javascript">
             <?php
-                error_reporting(0);
+                //error_reporting(0);
                 $engines = array();
                 if ($handle = opendir('page')) {
                     while (false !== ($file = readdir($handle)))
@@ -32,7 +32,7 @@
                     }
                     closedir($handle);
                 }
-                echo 'var ENGINES = '.json_encode($engines, JSON_UNESCAPED_SLASHES).';';
+                //echo 'var ENGINES = '.json_encode($engines, JSON_UNESCAPED_SLASHES).';';
             ?>
 
         </script>
@@ -40,14 +40,31 @@
     <body>
         <div class="container">
             <div class="row header">
-                <div class="col-xs-7">
-                    <h3>Typical page benchmark <br/>for PHP template engines</h3>
-                </div>
-                <div class="col-xs-5">
-                    <button class="btn btn-lg btn-warning" id="start">Start benchmark!</button>
-                </div>
+                <h2>Typical Page Benchmark for PHP template engines</h2>
             </div>
             <hr/>
+            <div class="row">
+                <div id="choose" class="well well-sm">
+
+                    <div style="text-align: center" id="toolbar">
+                        <div class="btn-group">
+                            <button id="check_all" type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-check"></span> Check All</button>
+                            <button id="uncheck_all" type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-unchecked"></span> Uncheck All</button>
+                        </div>
+                    </div>
+
+                    <div class="checkboxes" id="checkboxes">
+                        <?php foreach ($engines as $engine) { ?>
+                            <span class="checkbox"><label><input type="checkbox" checked="checked" id="engine_<?php echo $engine["id"] ?>" data-id="<?php echo $engine["id"] ?>" data-name="<?php echo $engine["name"] ?>" data-version="<?php echo $engine["version"] ?>" data-url="<?php echo $engine["url"] ?>"> <b><?php echo $engine["name"] ?></b> <?php echo $engine["version"] ?></label></span>
+                        <?php } ?>
+                    </div>
+
+                    <div style="text-align: center">
+                        <button class="btn btn-lg btn-warning" id="start">Start benchmark!</button>
+                    </div>
+
+                </div>
+            </div>
             <div class="row">
                 <div class="col-xs-7">
                     <div id="process"></div>
@@ -159,8 +176,47 @@
 
                     el_table__render.tablesorter().trigger("sorton",[sorting]);
                     el_result__render.addClass('panel-warning');
+
+                    $('#toolbar').removeClass('hidden');
+                    $('#checkboxes').removeClass('hidden');
+
                     el_start__button.text('Restart Benchmark!').removeAttr('disabled');
                 }
+
+
+
+                function check_buttons() {
+                    var checked = $("#checkboxes input[type='checkbox']:checked").length;
+                    var all = $("#checkboxes input[type='checkbox']").length
+                    if (checked == all) {
+                        $('#check_all').attr('disabled', 'disabled');
+                    } else {
+                        $('#check_all').removeAttr('disabled');
+                    }
+                    if (checked == 0) {
+                        $('#uncheck_all').attr('disabled', 'disabled');
+                        el_start__button.attr('disabled', 'disabled');
+                    } else {
+                        el_start__button.removeAttr('disabled');
+                        $('#uncheck_all').removeAttr('disabled');
+                    }
+                }
+
+                $("#checkboxes input[type='checkbox']").on('click', function(){
+                    check_buttons();
+                });
+
+                $('#check_all').on('click', function() {
+                    $("#checkboxes input[type='checkbox']").prop('checked', 'checked');
+                    check_buttons();
+                });
+
+                $('#uncheck_all').on('click', function() {
+                    $("#checkboxes input[type='checkbox']").removeAttr('checked');
+                    check_buttons();
+                });
+
+                check_buttons();
 
                 el_start__button.on('click', function(){
                     el_start__button.attr('disabled', 'disabled');
@@ -171,9 +227,26 @@
                     el_score__render.children().remove();
                     el_table__render.addClass('hidden');
                     el_result__render.addClass('hidden');
+
+                    $('#toolbar').addClass('hidden');
+                    $('#checkboxes').addClass('hidden');
+
                     $('.headerSortDown').removeClass('headerSortDown');
                     $('.headerSortUp').removeClass('headerSortUp');
-                    $.each(ENGINES, function(i, engine){
+                    var checked_engines = [];
+                    $.each($("#checkboxes input[type='checkbox']:checked"), function(i, item){
+                        var item = $(item);
+                       checked_engines.push(
+                           {
+                                "id": item.data('id'),
+                                "name": item.data('name'),
+                                "version": item.data('version'),
+                                "url": item.data('url')
+                           }
+                       )
+                    });
+
+                    $.each(checked_engines, function(i, engine){
                         var engine_panel = $(
                             '<div id="panel_' + engine.id + '" class="panel panel-default">' +
                                 '<div class="panel-heading">' +
@@ -190,7 +263,7 @@
                         el_result__render.removeClass('hidden').removeClass('panel-warning');
                         el_sidebar.removeClass('hidden');
                     });
-                    var benchmark = new Benchmark(ENGINES, {
+                    var benchmark = new Benchmark(checked_engines, {
                         'on_start': on_start,
                         'on_update': on_update,
                         'on_complete': on_complete,
