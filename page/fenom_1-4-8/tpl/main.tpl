@@ -1,4 +1,5 @@
 <!doctype html>
+{filter|strip:true}
 <html>
     <head>
         <meta charset="utf-8">
@@ -36,3 +37,4 @@
         </div>
     </body>
 </html>
+{/filter}
