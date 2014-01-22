@@ -1,0 +1,96 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Flot Examples: Stacking</title>
+    <link rel="stylesheet" href="/static/css/examples.css">
+    <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.flot.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.flot.time.js"></script>
+    <script type="text/javascript">
+
+        $(function() {
+
+            var container = $("#placeholder");
+            var maximum = container.outerWidth() / 2 || 300;
+
+            var data = [];
+
+            function getRandomData() {
+                if (data.length) {
+                    data = data.slice(1);
+                }
+                while (data.length < maximum) {
+                    var previous = data.length ? data[data.length - 1] : 50;
+                    var y = previous + Math.random() * 10 - 5;
+                    data.push(y < 0 ? 0 : y > 100 ? 100 : y);
+                }
+                var res = [];
+                for (var i = 0; i < data.length; ++i) {
+                    res.push([i, data[i]])
+                }
+                return res;
+            }
+
+            series = [{
+                data: getRandomData(),
+                lines: {
+                    show: true,
+                    fill: true,
+                    //fillColor: ['#ddd', '#ccc'],
+                    lineWidth: 0
+                }
+            }];
+
+            var plot = $.plot(container, series, {
+                grid: {
+                    borderWidth: 0,
+                    labelMargin: 10,
+                    backgroundColor: "#fff"
+                },
+                xaxis: {
+                    mode: "time",
+                    timeformat: "%Y/%m/%d"
+                },
+                yaxis: {
+                    min: 0,
+                    max: 100
+                },
+                legend: {
+                    show: true
+                },
+                colors: ["#d18b2c", "#dba255", "#919733"]
+            });
+
+            var counter = 0;
+            setInterval(function updateRandom() {
+                if(counter<10){
+                    series[0].data = getRandomData();
+                    plot.setData(series);
+                    plot.draw();
+                }
+                counter++;
+            }, 400);
+
+        });
+
+    </script>
+</head>
+<body>
+
+<div id="header">
+    <h2>Stacking</h2>
+</div>
+
+<div id="content">
+
+    <div class="demo-container">
+        <div id="placeholder" class="demo-placeholder"></div>
+    </div>
+
+
+</div>
+
+</body>
+</html>

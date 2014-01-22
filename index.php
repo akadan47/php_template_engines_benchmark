@@ -8,11 +8,15 @@
         <link rel="stylesheet" href="/static/css/style.css">
 
         <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.flot.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.flot.time.js"></script>
+
         <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/static/js/simple-slider.min.js"></script>
         <script type="text/javascript" src="/static/js/smoothie.js"></script>
         <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
         <script type="text/javascript" src="/static/js/benchmark.js"></script>
+
 
             <?php
                 error_reporting(0);
@@ -196,27 +200,65 @@
                 });
 
                 function on_start(engine){
-                    engine.line_time = new TimeSeries();
-                    engine.line_init = new TimeSeries();
-                    engine.chart = new SmoothieChart({millisPerPixel:50,maxValueScale:2,minValue:0, maxValue:100,grid:{fillStyle:'#ffffff',strokeStyle:'rgba(119,119,119,0.11)',sharpLines:true,borderVisible:false},labels:{fillStyle:'#777777'}});
-                    engine.chart.addTimeSeries(engine.line_time, {lineWidth:0.25, strokeStyle:'#58fa46', fillStyle:'#58fa46'});
-                    engine.chart.addTimeSeries(engine.line_init, {lineWidth:0.25, strokeStyle:'#00acff', fillStyle:'#00acff'});
+                    engine.chart_elem = $("#chart_"+engine.id);
+                    var maximum = engine.chart_elem.outerWidth() / 2 || 300;
+                    var data = [];
 
-                    engine.chart.streamTo(document.getElementById("chart_"+engine.id), 100);
-                    engine.chart.start();
-                    $('#panel_'+engine.id).addClass('panel-warning');
+                    function getRandomData() {
+                        if (data.length) {
+                            data = data.slice(1);
+                        }
+                        while (data.length < maximum) {
+                            var previous = data.length ? data[data.length - 1] : 50;
+                            var y = previous + Math.random() * 10 - 5;
+                            data.push(y < 0 ? 0 : y > 100 ? 100 : y);
+                        }
+                        var res = [];
+                        for (var i = 0; i < data.length; ++i) {
+                            res.push([i, data[i]])
+                        }
+                        return res;
+                    }
+                    engine.series = [{
+                        data: getRandomData(),
+                        lines: {
+                            show: true,
+                            fill: true,
+                            //fillColor: ['#ddd', '#ccc'],
+                            lineWidth: 0
+                        }
+                    }];
+
+                    engine.plot = $.plot(engine.chart_elem, engine.series, {
+                        grid: {
+                            borderWidth: 0,
+                            labelMargin: 10,
+                            backgroundColor: "#fff"
+                        },
+                        xaxis: {
+                            mode: "time",
+                            timeformat: "%Y/%m/%d"
+                        },
+                        yaxis: {
+                            min: 0,
+                            max: 100
+                        },
+                        legend: {
+                            show: true
+                        },
+                        colors: ["#d18b2c", "#dba255", "#919733"]
+                    });
 
                 }
 
                 function on_update(engine, time, time_init, time_render, percent, main_percent) {
-                    engine.line_init.append(new Date().getTime(), time_init);
-                    engine.line_time.append(new Date().getTime(), time);
+
                     $('#bar_'+engine.id).css('width', percent+"%");
                     el_main_progress_bar.css('width', main_percent+"%");
                 }
 
                 function on_complete(engine, results) {
-                    engine.chart.stop();
+
 
                     if (el_score__time.children())
                         el_table__time.removeClass('hidden');
