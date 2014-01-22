@@ -3,11 +3,11 @@
 $is_json = isset($_GET['json']);
 $is_clear = isset($_GET['clear']);
 
-function print_time($is_json, $time, $time_init, $time_render)
+function print_time($is_json, $generation, $init, $render)
 {
     if ($is_json) {
         header('Content-type: application/json');
-        echo json_encode(array("datetime"=>microtime(), "time"=>$time, "time_init"=>$time_init, "time_render"=>$time_render));
+        echo json_encode(array("time"=>microtime(), "generation"=>$generation, "init"=>$init, "render"=>$render));
     } else
-        echo "<div id=\"time\"><b>Time</b>: ".$time." <b>Init</b>: ".$time_init." <b>Render</b>: ".$time_render."</div>";
+        echo "<div id=\"time\"><b>Time</b>: ".$generation." <b>Init</b>: ".$init." <b>Render</b>: ".$render."</div>";
 }

@@ -15,9 +15,9 @@ function Benchmark(engines, options) {
     this.all_request_count = (this.options.requests * this.engines_count);
     //this.on_every = function(x){return self.request_count % x === 0};
 
-    this.time = [];
-    this.time_init = [];
-    this.time_render = [];
+    this.data_generation = [];
+    this.data_init = [];
+    this.data_render = [];
 
     this.is_first = true;
 
@@ -35,7 +35,7 @@ function Benchmark(engines, options) {
     function get_results (time, init, render) {
         var result;
         result = {
-            'time': {
+            'generation': {
                 'avg': (average(time) * 1000).toFixed(2),
                 'min': (Math.min.apply({}, time) * 1000).toFixed(2),
                 'max': (Math.max.apply({}, time) * 1000).toFixed(2)
@@ -68,13 +68,13 @@ function Benchmark(engines, options) {
                 dataType: 'json',
                 async: 'false',
                 success: function(json) {
-                    var time = json['time'];
-                    var time_init = json['time_init'];
-                    var time_render = json['time_render'];
+                    var generation = json['generation'];
+                    var init = json['init'];
+                    var render = json['render'];
                     if (!self.is_first) {
-                        self.time.push(time);
-                        self.time_init.push(time_init);
-                        self.time_render.push(time_render);
+                        self.data_generation.push(generation);
+                        self.data_init.push(init);
+                        self.data_render.push(render);
                     } else {
                         self.is_first = false;
                         self.options.on_start(self.engines[0]);
@@ -84,9 +84,9 @@ function Benchmark(engines, options) {
 
                     self.options.on_update(
                         self.engines[0],
-                        (time * 1000).toFixed(4),
-                        (time_init * 1000).toFixed(4),
-                        (time_render*1000).toFixed(4),
+                        (generation * 1000).toFixed(4),
+                        (init * 1000).toFixed(4),
+                        (render*1000).toFixed(4),
                         percent,
                         main_percent
                     );
@@ -99,12 +99,12 @@ function Benchmark(engines, options) {
                 error: bench
             });
         } else {
-            var results = get_results(self.time, self.time_init, self.time_render);
+            var results = get_results(self.data_generation, self.data_init, self.data_render);
             self.options.on_complete(self.engines[0], results);
             self.engines.shift();
-            self.time = [];
-            self.time_init = [];
-            self.time_render = [];
+            self.data_generation = [];
+            self.data_init = [];
+            self.data_init = [];
             self.is_first = true;
             if (self.engines.length) {
                 self.request_count = self.options.requests;
