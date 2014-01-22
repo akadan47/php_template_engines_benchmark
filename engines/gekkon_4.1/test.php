@@ -1,9 +1,7 @@
 <?php
 
 include_once 'gekkon.php';
-include_once 'compiler.php';
-include_once 'll_parser.php';
-include_once 'lexer.php';
+Gekkon::include_dir('compiler');
 
 define('R_DEBUG', 1);
 ini_set("display_errors", 'on');

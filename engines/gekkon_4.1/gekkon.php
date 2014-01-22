@@ -1,9 +1,9 @@
 <?php
 
-//version 4.1
+//version 4.2
 class Gekkon {
 
-    var $version = 4.1;
+    var $version = 4.2;
     var $bin_path;
     var $tpl_path;
     var $gekkon_path;
@@ -18,11 +18,7 @@ class Gekkon {
         $this->compiler = false;
         $this->display_errors = ini_get('display_errors') == 'on';
         $this->tpl_name = '';
-        $this->complier_settings = array(
-            'tag_open' => '{',
-            'tag_close' => '}',
-            'echo_open' => '{',
-            'echo_close' => '}');
+        $this->compiler_settings = array();
     }
 
     function register($name, &$data)
@@ -105,42 +101,13 @@ class Gekkon {
         else $this->clear_dir(dirname($this->full_bin_path($tpl_name)).'/');
     }
 
-    function create_dir($path)
-    {
-        if(substr($path, -1) == '/') $path = substr($path, 0, -1);
-        if(!is_dir($path))
-        {
-            $parent = dirname($path);
-            Gekkon::create_dir($parent);
-            mkdir($path);
-        }
-    }
-
-    function clear_dir($path)
-    {
-        if(is_dir($path) && $dh = opendir($path))
-        {
-            while(($file = readdir($dh)) !== false)
-            {
-                if($file[0] != '.')
-                {
-                    if(is_dir($path.$file))
-                    {
-                        Gekkon::clear_dir($path.$file.'/');
-                        rmdir($path.$file);
-                    }
-                    else unlink($path.$file);
-                }
-            }
-            closedir($dh);
-        }
-    }
-
     function compile($tpl_name)
     {
         if(!$this->compiler)
         {
-            include_once $this->gekkon_path.'compiler.php';
+            include_once 'compiler_settings.php';
+            Gekkon::include_dir($this->gekkon_path.'compiler');
+            $this->compiler_settings = $compiler_settings;
             $this->compiler = new GekkonCompiler($this);
         }
         return $this->compiler->compile($tpl_name);
@@ -177,6 +144,64 @@ class Gekkon {
 
         error_log(trim(strip_tags($message)));
         return false;
+    }
+
+    function include_dir($path)
+    {
+        $path = rtrim($path, '/');
+        $dirs = array();
+        if(is_dir($path))
+        {
+            $files = scandir($path);
+            foreach($files as $file)
+            {
+                if($file[0] != '.')
+                {
+                    if(is_dir($path.'/'.$file)) $dirs[] = $path.'/'.$file;
+                    else
+                    {
+                        $to_include = $path.'/'.$file;
+                        if(strtolower(strrchr($to_include, '.')) === '.php')
+                        {
+                            include_once $to_include;
+                        }
+                    }
+                }
+            }
+            foreach($dirs as $dir) Gekkon::include_dir($dir);
+        }
+    }
+
+    function clear_dir($path)
+    {
+        $path = rtrim($path, '/').'/';
+        if(is_dir($path) && $dh = opendir($path))
+        {
+            while(($file = readdir($dh)) !== false)
+            {
+                if($file[0] != '.')
+                {
+                    if(is_dir($path.$file))
+                    {
+                        Gekkon::clear_dir($path.$file.'/');
+                        rmdir($path.$file);
+                    }
+                    else unlink($path.$file);
+                }
+            }
+            closedir($dh);
+        }
+    }
+
+    function create_dir($path)
+    {
+        $path = rtrim($path, '/');
+        if(!is_dir($path))
+        {
+            $parent = dirname($path);
+            Gekkon::create_dir($parent);
+            mkdir($path);
+        }
     }
 
 }
