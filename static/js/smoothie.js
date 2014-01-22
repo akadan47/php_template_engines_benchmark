@@ -448,7 +448,7 @@
 
       // Render at least every 1/6th of a second. The canvas may be resized, which there is
       // no reliable way to detect.
-      var maxIdleMillis = Math.min(1000/6, this.options.millisPerPixel);
+      var maxIdleMillis = 1;
 
       if (nowMillis - this.lastRenderTimeMillis < maxIdleMillis) {
         return;
