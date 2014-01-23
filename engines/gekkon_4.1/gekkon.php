@@ -20,20 +20,20 @@ class Gekkon {
         $this->tpl_name = '';
         $this->compiler_settings = array();
 
-        $this->data = new GekkonScope();
+        $this->data = array();
     }
 
     function register($name, &$data)
     {
-        $this->data->$name = $data;
+        $this->data[$name] = &$data;
     }
 
     function assign($name, $data)
     {
-        $this->data->$name = $data;
+        $this->data[$name] = $data;
     }
 
-    function display($tpl_name, $scope_data = false, $parent_scope = false)
+    function display($tpl_name, $scope_data = false, $_scope = false)
     {
         $tpl_time = 0;
         if(is_file($tpl_file = $this->full_tpl_path($tpl_name)))
@@ -61,17 +61,20 @@ class Gekkon {
         {
             include_once $bin_file;
         }
-        if($parent_scope === false) $parent_scope = $this->data;
-        $scope = new GekkonScope($scope_data, $parent_scope);
-
-        $fn_nme($this, $scope);
+        if($_scope === false) $_scope = $this->data;
+        if($scope_data !== false)
+        {
+            $_scope = $scope_data;
+            $_scope['global'] = &$this->data;
+        }
+        $fn_nme($this, $_scope);
         $this->tpl_name = $tpl_name_save;
     }
 
-    function get_display($tpl_name)
+    function get_display($tpl_name, $scope_data = false, $_scope = false)
     {
         ob_start();
-        $this->display($tpl_name);
+        $this->display($tpl_name, $scope_data, $_scope);
         $out = ob_get_contents();
         ob_end_clean();
         return $out;
@@ -212,41 +215,3 @@ class Gekkon {
 }
 
 //end of class -----------------------------------------------------------------
-
-class GekkonScope {
-
-    private $data;
-    var $parent = false;
-
-    function __construct($data = false, $parent = false)
-    {
-        if($data === false) $data = array();
-        $this->data = $data;
-        $this->parent = $parent;
-    }
-
-    function &__get($name)
-    {
-        echo "get $name<br>";
-        if(isset($this->data[$name])) return $this->data[$name];
-        if($this->parent !== false) return $this->parent->__get($name);
-        return false;
-    }
-
-    function __set($name, $value)
-    {
-        //echo "set $name<br>";
-        if(isset($this->data[$name])) $this->data[$name] = $value;
-        else if($this->parent !== false) $this->parent->$name = $value;
-        else $this->data[$name] = $value;
-        return $value;
-    }
-
-    function create($name, &$value = false)
-    {
-        $this->data[$name] = $value;
-    }
-
-}
-
-//end of class------------------------------------------------------------------

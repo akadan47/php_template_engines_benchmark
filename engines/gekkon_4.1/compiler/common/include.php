@@ -9,7 +9,7 @@ class gekkon_tag_include extends gekkon_base_tag_single {
                 return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
                     $this);
 
-        return '$gekkon->display('.$exp.");\n";
+        return '$gekkon->display('.$exp.",false,\$_scope);\n";
     }
 
 }
