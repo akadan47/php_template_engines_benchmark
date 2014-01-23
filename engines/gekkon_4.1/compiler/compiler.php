@@ -115,7 +115,7 @@ class GekkonCompiler {
     function parse_str($_str, $_parent)
     {
         $rez = array();
-        $_line = 0;
+        $_line = $_parent->line + $_parent->open_lines();
 
         while($_str != '')
         {
@@ -133,19 +133,18 @@ class GekkonCompiler {
                 $before = new gekkon_tag_static(
                     substr($_str, 0, $_tag->open_start));
                 $rez[] = $before;
-                $_line += $before->count_lines();
+                //echo $_line, '>', trim($before->content_raw), "\n";
+                $_line += $before->total_lines();
+                $_str = substr($_str, $before->total_length());
+                $_tag->open_start = 0;
             }
-            $_str = substr($_str, $_tag->open_start + $_tag->open_length);
-
-            $_tag->line = $_parent->line + $_parent->count_open_lines() + $_line;
-
+            //echo $_line, '>', trim($_tag->open_raw), "\n";
+            $_tag->line = $_line;
             $_tag = $this->parse_tag($_tag, $_str);
-            $_line += $_tag->count_lines();
 
-            if(( $get_rest = $_tag->close_start() + $_tag->close_length ) > 0)
-            {
-                $_str = substr($_str, $get_rest);
-            }
+            $_line += $_tag->total_lines();
+            $_str = substr($_str, $_tag->total_length());
+
             $rez[] = $_tag;
         }
         return $rez;

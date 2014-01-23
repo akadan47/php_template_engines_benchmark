@@ -46,6 +46,8 @@ $vars = array(
     '$aaa.bbb(111,333).ccc($aaa.bbb($aaa.bbb(111)),444)',
     '$aaa.bbb($ccc.bbb(111))->method(param)->prop.func(1)',
     '$aaa.bbb($ccc.bbb(111),$fff.bbb($ggg.bbb(111)))->method(param,param2,$jjj.bbb($aaa.bbb(111)))->prop.funcF($str.($index.index2).(($index3.index4)->method1()->prop1.func()).func2())',
+    '$aaa.bbb(111).123',
+    '$aaa.bbb(111).123.ccc()',
     'reactor::$min',
     'reactor::$min.111',
     'reactor::$min.',
