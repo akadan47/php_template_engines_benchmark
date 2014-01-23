@@ -227,7 +227,7 @@ class GekkonScope {
 
     function &__get($name)
     {
-        echo "get $name<br>";
+        //echo "get $name<br>";
         if(isset($this->data[$name])) return $this->data[$name];
         if($this->parent !== false) return $this->parent->__get($name);
         return false;
