@@ -11,9 +11,9 @@ class gekkon_base_tag {
     var $line;
     var $start_token;
     var $end_token;
-    var $open_start;
-    var $open_length; //with tokens
-    var $close_length;
+    var $open_start = 0;
+    var $open_length = 0; //with tokens
+    var $close_length = 0;
 
     function compile($compiler)
     {
@@ -25,21 +25,16 @@ class gekkon_base_tag {
         return '/'.$this->name;
     }
 
-    function count_lines()
+    function total_lines()
     {
-        return $this->count_open_lines() +
+        return $this->open_lines() +
             substr_count($this->content_raw, "\n");
     }
 
-    function count_open_lines()
+    function open_lines()
     {
         return
             substr_count($this->open_raw, "\n");
-    }
-
-    function close_start()
-    {
-        return mb_strlen($this->content_raw);
     }
 
     function copy($_tag)
@@ -49,6 +44,11 @@ class gekkon_base_tag {
             if(is_object($_tag->$k)) $this->$k = &$_tag->$k;
             else $this->$k = $_tag->$k;
         }
+    }
+
+    function total_length()
+    {
+        return $this->open_length + mb_strlen($this->content_raw) + $this->close_length;
     }
 
 }
