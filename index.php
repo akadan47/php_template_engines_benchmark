@@ -9,15 +9,12 @@
 
         <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="/static/js/jquery.flot.js"></script>
-        <script type="text/javascript" src="/static/js/jquery.flot.time.js"></script>
 
         <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/static/js/simple-slider.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.slider.min.js"></script>
 
-        <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="/static/js/benchmark.js"></script>
-
-
             <?php
                 error_reporting(0);
                 $engines = array();
@@ -33,14 +30,11 @@
                                 'url' => '/page/'.$file.'/'
                             );
                             array_push($engines, $engine);
-//                            $cache_dir = './page/'.$file.'/tpl/cache/'.'<br>';
-//                            chmod($cache_dir, 0644);
                         }
                     }
                     closedir($handle);
                 }
             ?>
-
     </head>
     <body>
         <div class="container">
@@ -82,24 +76,6 @@
                 </div>
                 <div id="sidebar" class="col-xs-4 hidden">
                     <div class="bs-sidebar hidden-print affix-top">
-
-                        <div class="panel panel-default hidden" id="result_time">
-                            <div class="panel-heading"><h4 class="panel-title"><b id="title_time"></b> <span class="pull-right unit">seconds</span></h4></div>
-                            <div class="panel-body">
-                                <table class="table hidden" id="table_time">
-                                    <thead>
-                                    <tr>
-                                        <th class="name"><span>Engine</span></th>
-
-                                        <th class="time"><span><b>Time</b></span></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="score_time">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
 
                         <div class="panel panel-default hidden" id="result_generation">
                             <div class="panel-heading"><h4 class="panel-title"><b>Page generation</b> <span class="pull-right unit">ms</span></h4></div>
@@ -165,61 +141,53 @@
         <script type="text/javascript">
             $(function () {
                 var el_start__button = $('#start');
-
                 var el_process = $('#process');
                 var el_sidebar = $('#sidebar');
-
-                var el_title__time = $('#title_time');
-                var el_score__time = $('#score_time');
-                var el_table__time = $('#table_time');
-                var el_result__time = $('#result_time');
-
                 var el_score__generation = $('#score_generation');
                 var el_table__generation = $('#table_generation');
                 var el_result__generation = $('#result_generation');
-
                 var el_score__init = $('#score_init');
                 var el_table__init = $('#table_init');
                 var el_result__init = $('#result_init');
-
                 var el_score__render = $('#score_render');
                 var el_table__render = $('#table_render');
                 var el_result__render = $('#result_render');
-
                 var el_slider_wrap = $('#slider_wrap');
                 var el_slider = $('#slider');
                 var el_slider_value = $('#slider_value');
+                var el_main_progress = $('#progress_bar_wrap');
+                var el_main_progress_bar = $('#progress_bar');
 
-                el_table__time.tablesorter();
+                var btn_check_all = $('#check_all');
+                var btn_uncheck_all = $('#uncheck_all');
+
+                var list_checkboxes = $("#checkboxes input[type='checkbox']");
+
                 el_table__generation.tablesorter();
                 el_table__init.tablesorter();
                 el_table__render.tablesorter();
 
-                var el_main_progress = $('#progress_bar_wrap');
-                var el_main_progress_bar = $('#progress_bar');
-
-
                 // Functions
                 function check_buttons() {
                     var checked = $("#checkboxes input[type='checkbox']:checked").length;
-                    var all = $("#checkboxes input[type='checkbox']").length
+                    var all = list_checkboxes.length;
                     if (checked == all) {
-                        $('#check_all').attr('disabled', 'disabled');
+                        btn_check_all.attr('disabled', 'disabled');
                     } else {
-                        $('#check_all').removeAttr('disabled');
+                        btn_check_all.removeAttr('disabled');
                     }
                     if (checked == 0) {
-                        $('#uncheck_all').attr('disabled', 'disabled');
+                        btn_uncheck_all.attr('disabled', 'disabled');
                         el_start__button.attr('disabled', 'disabled');
                     } else {
                         el_start__button.removeAttr('disabled');
-                        $('#uncheck_all').removeAttr('disabled');
+                        btn_uncheck_all.removeAttr('disabled');
                     }
                 }
 
-                function on_start(engine){
+                function on_start(engine) {
                     var container = $("#chart_"+engine.id);
-                    engine.graph_generation = {
+                    engine.__generation = {
                         data: [],
                         lines: {
                             show: true,
@@ -228,7 +196,7 @@
                             fillColor: { colors: ["#00fa03", "#00fa03"] }
                         }
                     };
-                    engine.graph_init = {
+                    engine.__init = {
                         data: [],
                         lines: {
                             show: true,
@@ -237,10 +205,7 @@
                             fillColor: { colors: ["#0074ff", "#0074ff"] }
                         }
                     };
-                    engine.series = [];
-                    engine.series.push(engine.graph_generation);
-                    engine.series.push(engine.graph_init);
-
+                    engine.series = [engine.__generation, engine.__init];
                     function tick_format(v, xaxis) {return " "}
                     engine.plot = $.plot(container, engine.series, {
                         grid: {
@@ -252,8 +217,7 @@
                         },
                         xaxis: {
                             min: 0,
-                            max: el_slider.val()-(el_slider.val()/3),
-                            //tickSize: el_slider.val(),
+                            max: el_slider.val()-1,
                             ticks: 50,
                             tickLength: 0,
                             minTickSize: 1,
@@ -264,49 +228,37 @@
                         yaxis: {
                             min: 0,
                             max: 100
-                            //ticks: 1
-                            //tickLength: 5
-                            //tickLength: 0
                         }
                     });
-                    engine.plot.draw();
                 }
 
-                function on_update(engine, data, percent, global_percent) {
-                    engine.series[0].data = data['generation'];
-                    engine.series[1].data = data['init'];
+                function on_update(engine, data, global_percent) {
+                    engine.__generation.data = data['generation'];
+                    engine.__init.data = data['init'];
                     engine.plot.setData(engine.series);
                     engine.plot.draw();
-                    $('#bar_'+engine.id).css('width', percent+"%");
                     el_main_progress_bar.css('width', global_percent+"%");
                 }
 
                 function on_complete(engine, results) {
-                    if (el_score__time.children())
-                        el_table__time.removeClass('hidden');
                     if (el_score__generation.children())
                         el_table__generation.removeClass('hidden');
                     if (el_score__init.children())
                         el_table__init.removeClass('hidden');
                     if (el_score__render.children())
                         el_table__render.removeClass('hidden');
-                    $('#bar_'+engine.id).css('width', "100%").css('opacity', '0.15');
                     $('.panel-warning').removeClass('panel-warning');
-                    el_score__time.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td class="time"><b>'+results.time_from_start+'</b></td></tr>'));
 
                     el_score__generation.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.generation.avg+'</b></td><td>'+results.generation.min+'</td><td>'+results.generation.max+'</td></tr>'));
                     el_score__init.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
                     el_score__render.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
 
-
-                    el_table__time.trigger('update').trigger("sorton", [[[1,0]]]);
                     el_table__generation.trigger('update').trigger("sorton", [[[1,0]]]);
                     el_table__init.trigger('update').trigger("sorton", [[[1,0]]]);
                     el_table__render.trigger('update').trigger("sorton", [[[1,0]]]);
                 }
 
                 function on_finish() {
-                    el_result__time.addClass('panel-warning');
                     el_result__generation.addClass('panel-warning');
                     el_result__init.addClass('panel-warning');
                     el_result__render.addClass('panel-warning');
@@ -321,31 +273,28 @@
                 }
 
                 // Handlers
-                $('#check_all').on('click', function() {
-                    $("#checkboxes input[type='checkbox']").prop('checked', 'checked');
+                btn_check_all.on('click', function() {
+                    list_checkboxes.prop('checked', 'checked');
                     check_buttons();
                 });
 
-                $('#uncheck_all').on('click', function() {
-                    $("#checkboxes input[type='checkbox']").removeAttr('checked');
+                btn_uncheck_all.on('click', function() {
+                    list_checkboxes.removeAttr('checked');
                     check_buttons();
                 });
 
-                $("#checkboxes input[type='checkbox']").on('click', function(){
+                list_checkboxes.on('click', function(){
                     check_buttons();
                 });
 
                 el_slider.on("slider:ready slider:changed", function (event, data) {
                     el_slider_value.html(data.value + ' requests');
-                    el_title__time.html(data.value + ' requests time');
                 });
+                el_slider.simpleSlider({'range': [50,1000], 'step': 50, 'snap': true, 'highlight': true, 'theme': 'volume'});
 
                 el_start__button.on('click', function(){
                     el_start__button.attr('disabled', 'disabled');
                     el_process.children().remove();
-                    el_score__time.children().remove();
-                    el_table__time.addClass('hidden');
-                    el_result__time.addClass('hidden');
                     el_score__generation.children().remove();
                     el_table__generation.addClass('hidden');
                     el_result__generation.addClass('hidden');
@@ -356,17 +305,14 @@
                     el_table__render.addClass('hidden');
                     el_result__render.addClass('hidden');
                     el_slider_wrap.addClass('hidden');
-                    $.tablesorter.clearTableBody(el_table__time);
+                    el_main_progress.removeClass('hidden');
                     $.tablesorter.clearTableBody(el_table__generation);
                     $.tablesorter.clearTableBody(el_table__render);
                     $.tablesorter.clearTableBody(el_table__init);
-                    el_main_progress.removeClass('hidden');
-
                     $('#toolbar').addClass('hidden');
                     $('#checkboxes').addClass('hidden');
                     $('.headerSortDown').removeClass('headerSortDown');
                     $('.headerSortUp').removeClass('headerSortUp');
-
                     var checked_engines = [];
 
                     $.each($("#checkboxes input[type='checkbox']:checked"), function(i, item){
@@ -387,12 +333,10 @@
                                 '</div>' +
                                 '<div class="panel-body panel-chart">' +
                                     '<div id="chart_' + engine.id + '" style="width: 605px; height: 100px"></div>' +
-                                    '<div class="progress active  progress-striped"><div id="bar_' + engine.id + '" class="progress-bar progress-bar-primary"></div></div>' +
                                 '</div>' +
                             '</div>'
                         );
                         el_process.append(engine_panel);
-                        el_result__time.removeClass('hidden').removeClass('panel-warning');
                         el_result__generation.removeClass('hidden').removeClass('panel-warning');
                         el_result__init.removeClass('hidden').removeClass('panel-warning');
                         el_result__render.removeClass('hidden').removeClass('panel-warning');
@@ -408,9 +352,6 @@
                     });
                     benchmark.start();
                 });
-
-                //
-                el_slider.simpleSlider({'range': [50,1000], 'step': 50, 'snap': true, 'highlight': true, 'theme': 'volume'});
 
                 check_buttons();
             });
