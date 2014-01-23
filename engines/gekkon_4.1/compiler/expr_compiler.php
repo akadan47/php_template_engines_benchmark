@@ -263,7 +263,7 @@ class GekkonArgCompiler {
 
     function n_object($_data)
     {
-        if(isset($_data['$'])) $this->rez .= "\$_gkn_data['".$_data['w']."']";
+        if(isset($_data['$'])) $this->rez .= "\$_gkn_data->".$_data['w'];
         if(isset($_data['@'])) $this->rez .= '$'.$_data['w'];
     }
 

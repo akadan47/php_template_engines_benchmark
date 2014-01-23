@@ -19,19 +19,21 @@ class Gekkon {
         $this->display_errors = ini_get('display_errors') == 'on';
         $this->tpl_name = '';
         $this->compiler_settings = array();
+
+        $this->data = new GekkonScope();
     }
 
     function register($name, &$data)
     {
-        $this->data[$name] = &$data;
+        $this->data->$name = $data;
     }
 
     function assign($name, $data)
     {
-        $this->data[$name] = $data;
+        $this->data->$name = $data;
     }
 
-    function display($tpl_name)
+    function display($tpl_name, $scope_data = false, $parent_scope = false)
     {
         $tpl_time = 0;
         if(is_file($tpl_file = $this->full_tpl_path($tpl_name)))
@@ -59,7 +61,10 @@ class Gekkon {
         {
             include_once $bin_file;
         }
-        $fn_nme($this);
+        if($parent_scope === false) $parent_scope = $this->data;
+        $scope = new GekkonScope($scope_data, $parent_scope);
+
+        $fn_nme($this, $scope);
         $this->tpl_name = $tpl_name_save;
     }
 
@@ -208,3 +213,40 @@ class Gekkon {
 
 //end of class -----------------------------------------------------------------
 
+class GekkonScope {
+
+    private $data;
+    var $parent = false;
+
+    function __construct($data = false, $parent = false)
+    {
+        if($data === false) $data = array();
+        $this->data = $data;
+        $this->parent = $parent;
+    }
+
+    function &__get($name)
+    {
+        echo "get $name<br>";
+        if(isset($this->data[$name])) return $this->data[$name];
+        if($this->parent !== false) return $this->parent->__get($name);
+        return false;
+    }
+
+    function __set($name, $value)
+    {
+        //echo "set $name<br>";
+        if(isset($this->data[$name])) $this->data[$name] = $value;
+        else if($this->parent !== false) $this->parent->$name = $value;
+        else $this->data[$name] = $value;
+        return $value;
+    }
+
+    function create($name, &$value = false)
+    {
+        $this->data[$name] = $value;
+    }
+
+}
+
+//end of class------------------------------------------------------------------

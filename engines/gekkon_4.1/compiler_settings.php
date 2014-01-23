@@ -2,11 +2,11 @@
 
 $compiler_settings = array(
     'tag_systems' => array(
-        'common' => array(
+        'echo' => array(
             'open' => '{',
             'close' => '}',
         ),
-        'echo' => array(
+        'common' => array(
             'open' => '{',
             'close' => '}',
         ),
