@@ -5,6 +5,7 @@ require('../../common.php');
 $method = $is_json ? "fetch" : "display";
 
 $start = microtime(true);
+$memory_start = memory_get_usage();
 function __autoload($className){
     $className = ltrim($className, '\\');
     $fileName  = '';
@@ -26,8 +27,8 @@ if ($is_clear) $fenom->clearAllCompiles();
 $time_init = microtime(true)-$start;
 $start_render = microtime(true);
 $fenom->$method("main.tpl", $_DATA);
-
+$memory = memory_get_usage() - $memory_start;
 $time = microtime(true)-$start;
 $time_render = microtime(true)-$start_render;
 
-print_time($is_json, $time, $time_init, $time_render);
+print_time($is_json, $time, $time_init, $time_render, $memory);
