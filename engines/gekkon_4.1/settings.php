@@ -1,6 +1,7 @@
 <?php
 
-$compiler_settings = array(
+$settings = array(
+    'auto_escape' => false,
     'tag_systems' => array(
         'echo' => array(
             'open' => '{',

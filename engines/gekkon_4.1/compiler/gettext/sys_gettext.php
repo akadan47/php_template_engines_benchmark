@@ -32,13 +32,16 @@ class gekkon_tag_sys_gettext extends gekkon_base_tag_single {
                     return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
                                 $this);
 
-
-            return "echo gettext($exp);\n";
+            return $compiler->out("gettext($exp)");
             $static = create_function('$gekkon,$_scope', "return gettext($exp);");
-            return "echo ".var_export($static($compiler->gekkon,
-                                    $compiler->gekkon->data), true).";\n";
+
+            return $compiler->out(var_export($static($compiler->gekkon,
+                                            $compiler->gekkon->data), true));
         }
-        return "echo ".var_export(gettext($this->args_raw), true).";\n";
+        $static = create_function('',
+                "return ".$compiler->out(
+                        var_export(gettext($this->args_raw), true), true).";");
+        return $static();
     }
 
 }

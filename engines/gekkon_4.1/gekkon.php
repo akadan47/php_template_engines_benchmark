@@ -18,7 +18,7 @@ class Gekkon {
         $this->compiler = false;
         $this->display_errors = ini_get('display_errors') == 'on';
         $this->tpl_name = '';
-        $this->compiler_settings = array();
+        $this->settings = array();
 
         $this->data = new ArrayObject();
         $this->data['global'] = $this->data;
@@ -116,9 +116,9 @@ class Gekkon {
     {
         if(!$this->compiler)
         {
-            include_once 'compiler_settings.php';
+            include_once 'settings.php';
             Gekkon::include_dir($this->gekkon_path.'compiler');
-            $this->compiler_settings += $compiler_settings;
+            $this->settings += $settings;
             $this->compiler = new GekkonCompiler($this);
         }
         return $this->compiler->compile($tpl_name);

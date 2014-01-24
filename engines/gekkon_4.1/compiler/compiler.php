@@ -18,14 +18,14 @@ class GekkonCompiler {
         $this->tag_systems = array();
         $tokens = array();
         $tag_system_map = array();
-        foreach($this->gekkon->compiler_settings['tag_systems'] as $sys => $data)
+        foreach($this->gekkon->settings['tag_systems'] as $sys => $data)
         {
             $class_name = 'gekkon_tag_sys_'.$sys;
             if(class_exists($class_name))
             {
                 $this->tag_systems[$sys] = new $class_name($this, $data);
                 $tokens[$data['open']][$data['close']] = preg_quote($data['close'],
-                    '/');
+                        '/');
                 $tag_system_map[$data['open']][$data['close']][] = $sys;
             }
         }
@@ -78,9 +78,9 @@ class GekkonCompiler {
         $this->tpl_name = $tpl_name;
         $full_tpl_path = $this->gekkon->full_tpl_path($tpl_name);
         return "\nfunction ".$this->gekkon->fn_name($tpl_name)."(&\$gekkon,&\$_scope){\n".
-            '// Template file: '.$full_tpl_path."\n".
-            $this->compile_str(file_get_contents($full_tpl_path)).
-            "}\n";
+                '// Template file: '.$full_tpl_path."\n".
+                $this->compile_str(file_get_contents($full_tpl_path)).
+                "}\n";
         $this->tpl_name = '';
     }
 
@@ -130,7 +130,7 @@ class GekkonCompiler {
             if($_tag->open_start > 0)
             {
                 $before = new gekkon_tag_static(
-                    substr($_str, 0, $_tag->open_start));
+                        substr($_str, 0, $_tag->open_start));
                 $rez[] = $before;
                 //echo $_line, '>', trim($before->content_raw), "\n";
                 $_line += $before->total_lines();
@@ -153,13 +153,13 @@ class GekkonCompiler {
     {
         $open_raw = false;
         if(preg_match('/'.$this->open_tokens.'/u', $_str, $preg_data,
-                PREG_OFFSET_CAPTURE))
+                        PREG_OFFSET_CAPTURE))
         {
             $open_start_token = $preg_data[0][0];
             $open_start = $preg_data[0][1];
             $open_inner_start = $open_start + mb_strlen($open_start_token);
             if(preg_match('/'.$this->close_tokens[$open_start_token].'/u',
-                    $_str, $preg_data, PREG_OFFSET_CAPTURE, $open_start))
+                            $_str, $preg_data, PREG_OFFSET_CAPTURE, $open_start))
             {
                 $open_end_token = $preg_data[0][0];
                 $open_end = $preg_data[0][1];
@@ -189,7 +189,7 @@ class GekkonCompiler {
             if($_tag->system !== '') return $_tag;
         }
         return new gekkon_tag_static(
-            $_tag->start_token.$_tag->open_raw.$_tag->end_token);
+                $_tag->start_token.$_tag->open_raw.$_tag->end_token);
     }
 
     function get_file_list($dir = '')
@@ -210,7 +210,7 @@ class GekkonCompiler {
     function error_in_tag($msg, $_tag)
     {
         return $this->error($msg, 'Tag: '.$_tag->system.':'.$_tag->name,
-                $_tag->line);
+                        $_tag->line);
     }
 
     function error($msg, $object = false, $line = false)
@@ -262,6 +262,17 @@ class GekkonCompiler {
             }
             else $rez[$key][] = $tag;
         }
+        return $rez;
+    }
+
+    function out($data, $just_code = false)
+    {
+
+        if($just_code) $rez = '';
+        else $rez = 'echo ';
+        if($this->gekkon->settings['auto_escape'])
+                $rez.= "htmlspecialchars($data, ENT_QUOTES, 'UTF-8');\n";
+        else $rez.= $data.";\n";
         return $rez;
     }
 
