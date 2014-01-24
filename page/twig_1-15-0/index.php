@@ -7,7 +7,7 @@ $method = $is_json ? "render" : "display";
 
 $start = microtime(true);
 $memory_start = memory_get_usage();
-require('../../engines/twig_1.15.0/twig/Autoloader.php');
+require('../../engines/twig_1.15.0/Twig/Autoloader.php');
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem('tpl');
 $twig = new Twig_Environment($loader, array('cache' => 'tpl/cache', 'autoescape' => false, 'auto_reload' => false));
