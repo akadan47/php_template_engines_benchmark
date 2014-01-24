@@ -20,12 +20,13 @@ class Gekkon {
         $this->tpl_name = '';
         $this->compiler_settings = array();
 
-        $this->data = array();
+        $this->data = new ArrayObject();
+        $this->data['global'] = $this->data;
     }
 
-    function register($name, &$data)
+    function register($name, $data)
     {
-        $this->data[$name] = &$data;
+        $this->data[$name] = $data;
     }
 
     function assign($name, $data)
@@ -45,7 +46,7 @@ class Gekkon {
 
         if($tpl_time == 0)
                 return $this->error('Template '.$tpl_name.' cannot be found at '.$tpl_file,
-                    'gekkon');
+                            'gekkon');
 
         if($bin_time < $tpl_time)
         {
@@ -62,11 +63,13 @@ class Gekkon {
             include_once $bin_file;
         }
         if($_scope === false) $_scope = $this->data;
+
         if($scope_data !== false)
         {
-            $_scope = $scope_data;
+            $_scope = new ArrayObject($scope_data);
             $_scope['global'] = &$this->data;
         }
+
         $fn_nme($this, $_scope);
         $this->tpl_name = $tpl_name_save;
     }
@@ -101,7 +104,7 @@ class Gekkon {
         if($id !== '')
         {
             $cache_file = $this->cache_dir($tpl_name).
-                $this->cache_file($tpl_name, $id);
+                    $this->cache_file($tpl_name, $id);
 
             if(is_file($cache_file)) unlink($cache_file);
             return;
@@ -115,7 +118,7 @@ class Gekkon {
         {
             include_once 'compiler_settings.php';
             Gekkon::include_dir($this->gekkon_path.'compiler');
-            $this->compiler_settings = $compiler_settings;
+            $this->compiler_settings += $compiler_settings;
             $this->compiler = new GekkonCompiler($this);
         }
         return $this->compiler->compile($tpl_name);

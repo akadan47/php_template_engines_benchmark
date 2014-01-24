@@ -1,6 +1,7 @@
 <?php
 
-class gekkon_tag_sys_comment {
+//sys_gettext is a tag system and tag in the same time
+class gekkon_tag_sys_comment extends gekkon_base_tag {
 
     var $compiler;
 
@@ -11,10 +12,14 @@ class gekkon_tag_sys_comment {
 
     function try_parse($_tag, &$_str)
     {
-        $_new_tag = new gekkon_tag_comment($this->compiler);
-        $_new_tag->copy($_tag);
-        $_new_tag->system = 'comment';
-        return $_new_tag;
+        $this->copy($_tag);
+        $this->system = 'comment';
+        return $this;
+    }
+
+    function compile($compiler)
+    {
+        return '';
     }
 
 }

@@ -12,7 +12,7 @@ class gekkon_tag_sys_common {
     function try_parse($_tag, &$_str)
     {
         if(!preg_match('/^\s*([a-zA-Z0-9_]+)(\s.+)?$/u', $_tag->open_raw,
-                $preg_data)) return $_tag;
+                        $preg_data)) return $_tag;
 
         $_tag_name = $preg_data[1];
         $_tag_args_raw = isset($preg_data[2]) ? $preg_data[2] : '';
@@ -30,7 +30,7 @@ class gekkon_tag_sys_common {
         if($_ready_tag === false)
         {
             $this->compiler->error_in_tag('Cannot find closing tag '.$_new_tag->get_closer(),
-                $_new_tag);
+                    $_new_tag);
             return $_tag;
         }
 
@@ -50,14 +50,14 @@ class gekkon_tag_sys_common {
         $open_token = preg_quote($_tag->start_token, '/');
         $close_token = preg_quote($_tag->end_token, '/');
         preg_match_all('/'.$open_token.
-            '\s*'.$_tag->name.'(\s.+)?'.
-            $close_token.
-            '/Usu', $_str, $opens, PREG_OFFSET_CAPTURE, $_tag->open_length);
+                '\s*'.$_tag->name.'(\s.+)?'.
+                $close_token.
+                '/Usu', $_str, $opens, PREG_OFFSET_CAPTURE, $_tag->open_length);
 
         preg_match_all('/'.$open_token.
-            '\s*'.$closer.'\s*'.
-            $close_token.
-            '/u', $_str, $closes, PREG_OFFSET_CAPTURE, $_tag->open_length);
+                '\s*'.$closer.'\s*'.
+                $close_token.
+                '/Uu', $_str, $closes, PREG_OFFSET_CAPTURE, $_tag->open_length);
 
         foreach($opens[0] as $item)
         {
@@ -92,7 +92,7 @@ class gekkon_tag_sys_common {
         if($f == 0)
         {
             $_tag->content_raw = substr($_str, $_tag->open_length,
-                $pos - $_tag->open_length);
+                    $pos - $_tag->open_length);
             $_tag->close_start = $pos;
             $_tag->close_length = $end_len;
             return $_tag;

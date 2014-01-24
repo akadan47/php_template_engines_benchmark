@@ -30,7 +30,7 @@ class GekkonExpCompiler {
         $data = $this->arg_lexer->parse_expression($str);
         if($data === false)
                 return $this->compiler->error($this->arg_lexer->error,
-                    'arg_lexer');
+                            'arg_lexer');
 
         return $this->compile_parsed_exp($data);
     }
@@ -52,7 +52,7 @@ class GekkonExpCompiler {
         }
         if(!$this->check_exp_syntax($rez))
                 return $this->compiler->error('Wrong expression syntax "'.$orig.'"',
-                    'compile_exp');
+                            'compile_exp');
         /* */
         return $rez;
     }
@@ -139,14 +139,14 @@ class GekkonExpCompiler {
                 }
                 else
                         return $this->compiler->error('Unxpected keyword '.$item['v'].' '.$keys[$current_keyword],
-                            'arg_compiler');
+                                    'arg_compiler');
             }
             else
             {
                 if($keys[$current_keyword] === '<exp>') $buffer[] = $item;
                 else
                         return $this->compiler->error('Keyword "'.$keys[$current_keyword].'" is expected',
-                            'arg_compiler');
+                                    'arg_compiler');
             }
         }
 
@@ -157,7 +157,7 @@ class GekkonExpCompiler {
         }
         if($current_keyword < count($keys) - 1 && $strict === true)
                 return $this->compiler->error('Keyword "'.$keys[$current_keyword].'" is expected',
-                    'arg_compiler');
+                            'arg_compiler');
 
         return $rez;
     }
@@ -356,7 +356,7 @@ class GekkonArgCompiler {
         if(isset($_data['<is_function_or_static_object>']))
         {
             $this->n_is_function_or_static_object($_data['<is_function_or_static_object>'],
-                $_data['w']);
+                    $_data['w']);
         }
         else
         {
