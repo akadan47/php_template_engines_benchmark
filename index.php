@@ -133,6 +133,24 @@
                                 </table>
                             </div>
                         </div>
+
+                        <div class="panel panel-default hidden" id="result_memory">
+                            <div class="panel-heading"><h5 class="panel-title">Memory Usage <span class="pull-right unit">KB</span></h5></div>
+                            <div class="panel-body">
+                                <table class="table hidden" id="table_memory">
+                                    <thead>
+                                    <tr>
+                                        <th class="name"><span>Engine</span></th>
+                                        <th><span><b>Usage</b></span></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="score_memory">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -149,9 +167,15 @@
                 var el_score__init = $('#score_init');
                 var el_table__init = $('#table_init');
                 var el_result__init = $('#result_init');
+
                 var el_score__render = $('#score_render');
                 var el_table__render = $('#table_render');
                 var el_result__render = $('#result_render');
+
+                var el_score__memory = $('#score_memory');
+                var el_table__memory = $('#table_memory');
+                var el_result__memory = $('#result_memory');
+
                 var el_slider_wrap = $('#slider_wrap');
                 var el_slider = $('#slider');
                 var el_slider_value = $('#slider_value');
@@ -166,6 +190,7 @@
                 el_table__generation.tablesorter();
                 el_table__init.tablesorter();
                 el_table__render.tablesorter();
+                el_table__memory.tablesorter();
 
                 // Functions
                 function check_buttons() {
@@ -247,21 +272,26 @@
                         el_table__init.removeClass('hidden');
                     if (el_score__render.children())
                         el_table__render.removeClass('hidden');
+                    if (el_score__memory.children())
+                        el_table__memory.removeClass('hidden');
                     $('.panel-warning').removeClass('panel-warning');
 
                     el_score__generation.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.generation.avg+'</b></td><td>'+results.generation.min+'</td><td>'+results.generation.max+'</td></tr>'));
                     el_score__init.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
                     el_score__render.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
+                    el_score__memory.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.memory+'</b></td></tr>'));
 
                     el_table__generation.trigger('update').trigger("sorton", [[[1,0]]]);
                     el_table__init.trigger('update').trigger("sorton", [[[1,0]]]);
                     el_table__render.trigger('update').trigger("sorton", [[[1,0]]]);
+                    el_table__memory.trigger('update').trigger("sorton", [[[1,0]]]);
                 }
 
                 function on_finish() {
                     el_result__generation.addClass('panel-warning');
                     el_result__init.addClass('panel-warning');
                     el_result__render.addClass('panel-warning');
+                    el_result__memory.addClass('panel-warning');
 
                     $('#toolbar').removeClass('hidden');
                     $('#checkboxes').removeClass('hidden');
@@ -304,11 +334,15 @@
                     el_score__render.children().remove();
                     el_table__render.addClass('hidden');
                     el_result__render.addClass('hidden');
+                    el_score__memory.children().remove();
+                    el_table__memory.addClass('hidden');
+                    el_result__memory.addClass('hidden');
                     el_slider_wrap.addClass('hidden');
                     el_main_progress.removeClass('hidden');
                     $.tablesorter.clearTableBody(el_table__generation);
                     $.tablesorter.clearTableBody(el_table__render);
                     $.tablesorter.clearTableBody(el_table__init);
+                    $.tablesorter.clearTableBody(el_table__memory);
                     $('#toolbar').addClass('hidden');
                     $('#checkboxes').addClass('hidden');
                     $('.headerSortDown').removeClass('headerSortDown');
@@ -340,6 +374,7 @@
                         el_result__generation.removeClass('hidden').removeClass('panel-warning');
                         el_result__init.removeClass('hidden').removeClass('panel-warning');
                         el_result__render.removeClass('hidden').removeClass('panel-warning');
+                        el_result__memory.removeClass('hidden').removeClass('panel-warning');
                         el_sidebar.removeClass('hidden');
                     });
 
