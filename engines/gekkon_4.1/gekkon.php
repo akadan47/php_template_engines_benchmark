@@ -34,7 +34,7 @@ class Gekkon {
         $this->data[$name] = $data;
     }
 
-    function display($tpl_name, $scope_data = false, $_scope = false)
+    function display($tpl_name, $scope_data = false)
     {
         $fn_name = $this->fn_name($tpl_name);
         if(!function_exists($fn_name))
@@ -65,13 +65,12 @@ class Gekkon {
         $tpl_name_save = $this->tpl_name;
         $this->tpl_name = $tpl_name;
 
-        if($_scope === false) $_scope = $this->data;
-
-        if($scope_data !== false)
+        if($scope_data !== false && $scope_data !== $this->data)
         {
             $_scope = new ArrayObject($scope_data);
-            $_scope['global'] = &$this->data;
+            $_scope['global'] = $this->data;
         }
+        else $_scope = $this->data;
 
         $fn_name($this, $_scope);
         $this->tpl_name = $tpl_name_save;
