@@ -107,6 +107,8 @@ class GekkonExpCompiler {
 
     function check_exp_syntax($code)
     {
+        if(strpos($code, '=>') !== false)
+                return GekkonExpCompiler::check_syntax('$x=array('.$code.');');
         return GekkonExpCompiler::check_syntax('$x='.$code.';');
     }
 
@@ -263,7 +265,7 @@ class GekkonArgCompiler {
 
     function n_object($_data)
     {
-        if(isset($_data['$'])) $this->rez .= "\$_scope['".$_data['w']."']";
+        if(isset($_data['$'])) $this->rez .= "\$scope['".$_data['w']."']";
         if(isset($_data['@'])) $this->rez .= '$'.$_data['w'];
     }
 

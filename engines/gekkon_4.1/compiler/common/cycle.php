@@ -5,25 +5,29 @@ class gekkon_tag_cycle extends gekkon_base_tag_single {
     function compile($compiler)
     {
         $exp_compiler = &$compiler->exp_compiler;
-        if(($args = $exp_compiler->parse_expression($this->args_raw)) === false)
-                return $compiler->error_in_tag('Cannot parse args "'.$this->args_raw.'"',
-                    $this);
+        $values = $this->args_raw;
+        $variable = '$_gkn_cycle'.$compiler->getUID();
 
-        $args = $exp_compiler->split($args, ';');
-        $values = $exp_compiler->split($args[0]['v'], ',');
+        if(preg_match('/data\s*=/u', $this->args_raw, $preg_data,
+                        PREG_OFFSET_CAPTURE))
+        {
+            $values = substr($this->args_raw, 0, $preg_data[0][1]);
+            $args = substr($this->args_raw, $preg_data[0][1]);
+            $args = $compiler->exp_compiler->parse_args($args);
+            $args = $compiler->exp_compiler->compile_construction_expressions($args);
+            if(isset($args['data'])) $variable = $args['data'];
+        }
+
+        if(($values = $exp_compiler->parse_expression($values)) === false)
+                return $compiler->error_in_tag('Cannot parse args "'.$values.'"',
+                            $this);
+        $values = $exp_compiler->split($values, ',');
 
         if(($values = $exp_compiler->compile_construction_expressions($values)) === false)
-                return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
-                    $this);
+                return $compiler->error_in_tag('Cannot compile args "'.$values.'"',
+                            $this);
 
         $rez = '';
-        if(!isset($args[1])) $variable = '$_gkn_cycle'.$compiler->getUID();
-        else
-        {
-            if(($variable = $exp_compiler->compile_parsed_exp($args[1]['v'])) === false)
-                    return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
-                        $this);
-        }
         $rez.= "if(!isset(".$variable.")||!is_array(".$variable.")){\n";
         $rez.= $variable."=array('data'=>array(";
         foreach($values as $item) $rez.= $item.",";
