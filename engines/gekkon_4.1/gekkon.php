@@ -9,10 +9,9 @@ class Gekkon {
     var $gekkon_path;
     var $data;
 
-    function __construct($tpl_base_path, $bin_path, $tpl_path)
+    function __construct($tpl_path, $bin_path)
     {
         $this->bin_path = $bin_path;
-        $this->tpl_base_path = $tpl_base_path;
         $this->tpl_path = $tpl_path;
         $this->gekkon_path = dirname(__file__).'/';
         $this->compiler = false;
@@ -87,7 +86,7 @@ class Gekkon {
 
     function fn_name($tpl_name)
     {
-        return 'gekkon_'.strtr($this->tpl_path.$tpl_name, '/!.', '___');
+        return 'gekkon_tpl_'.md5($this->tpl_path.$tpl_name);
     }
 
     function cache_dir($tpl_name)
@@ -128,7 +127,7 @@ class Gekkon {
 
     function full_tpl_path($tpl_name)
     {
-        return $this->tpl_base_path.$this->tpl_path.$tpl_name;
+        return $this->tpl_path.$tpl_name;
     }
 
     function full_bin_path($tpl_name)
@@ -141,7 +140,7 @@ class Gekkon {
         }
         else $bin_name = basename($tpl_name);
 
-        $bin_path = $this->bin_path.abs(crc32($this->tpl_path.$tpl_name)).'/';
+        $bin_path = $this->bin_path.abs(crc32($this->full_tpl_path($tpl_name))).'/';
 
         return $bin_path.$bin_name.'.php';
     }

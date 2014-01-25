@@ -194,12 +194,12 @@ class GekkonCompiler {
 
     function get_file_list($dir = '')
     {
-        $list = scandir($this->gekkon->tpl_base_path.$this->gekkon->tpl_path.$dir);
+        $list = scandir($this->gekkon->tpl_path.$dir);
         foreach($list as $file)
         {
             if($file[0] != '.')
             {
-                if(is_dir($this->gekkon->tpl_base_path.$this->gekkon->tpl_path.$dir.$file))
+                if(is_dir($this->gekkon->tpl_path.$dir.$file))
                         $this->get_file_list($dir.$file.'/');
                 else if(strrchr($file, '.') == '.tpl' && $this->bin_file == $this->gekkon->full_bin_path($dir.$file))
                         $this->file_list[] = $dir.$file;
