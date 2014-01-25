@@ -36,32 +36,35 @@ class Gekkon {
 
     function display($tpl_name, $scope_data = false, $_scope = false)
     {
-        $tpl_time = 0;
-        if(is_file($tpl_file = $this->full_tpl_path($tpl_name)))
-                $tpl_time = filemtime($tpl_file);
-
-        $bin_time = 0;
-        if(is_file($bin_file = $this->full_bin_path($tpl_name)))
-                $bin_time = filemtime($bin_file);
-
-        if($tpl_time == 0)
-                return $this->error('Template '.$tpl_name.' cannot be found at '.$tpl_file,
-                            'gekkon');
-
-        if($bin_time < $tpl_time)
+        $fn_name = $this->fn_name($tpl_name);
+        if(!function_exists($fn_name))
         {
-            $this->clear_cache($tpl_name);
-            if(!$this->compile($tpl_name))
-                    return $this->error('Cannot compile '.$tpl_name, 'gekkon');
-        }
-        $tpl_name_save = $this->tpl_name;
-        $this->tpl_name = $tpl_name;
-        $fn_nme = $this->fn_name($tpl_name);
 
-        if(!function_exists($fn_nme))
-        {
+            $tpl_time = 0;
+            if(is_file($tpl_file = $this->full_tpl_path($tpl_name)))
+                    $tpl_time = filemtime($tpl_file);
+
+            $bin_time = 0;
+            if(is_file($bin_file = $this->full_bin_path($tpl_name)))
+                    $bin_time = filemtime($bin_file);
+
+            if($tpl_time == 0)
+                    return $this->error('Template '.$tpl_name.' cannot be found at '.$tpl_file,
+                                'gekkon');
+
+            if($bin_time < $tpl_time)
+            {
+                $this->clear_cache($tpl_name);
+                if(!$this->compile($tpl_name))
+                        return $this->error('Cannot compile '.$tpl_name,
+                                    'gekkon');
+            }
             include_once $bin_file;
         }
+
+        $tpl_name_save = $this->tpl_name;
+        $this->tpl_name = $tpl_name;
+
         if($_scope === false) $_scope = $this->data;
 
         if($scope_data !== false)
@@ -70,7 +73,7 @@ class Gekkon {
             $_scope['global'] = &$this->data;
         }
 
-        $fn_nme($this, $_scope);
+        $fn_name($this, $_scope);
         $this->tpl_name = $tpl_name_save;
     }
 
