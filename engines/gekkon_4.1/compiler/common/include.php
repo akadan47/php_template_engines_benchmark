@@ -26,6 +26,7 @@ class gekkon_tag_include extends gekkon_base_tag_single {
                 return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
                             $this);
 
+        $additional_args['scope'] = $compiler->exp_compiler->join_scopes($additional_args['scope']);
         return '$gekkon->display('.$exp.', '.$additional_args['scope'].");\n";
     }
 

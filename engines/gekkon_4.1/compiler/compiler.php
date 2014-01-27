@@ -77,7 +77,7 @@ class GekkonCompiler {
     {
         $this->tpl_name = $tpl_name;
         $full_tpl_path = $this->gekkon->full_tpl_path($tpl_name);
-        return "\nfunction ".$this->gekkon->fn_name($tpl_name)."(&\$gekkon,&\$scope){\n".
+        return "\nfunction ".$this->gekkon->fn_name($tpl_name)."(\$gekkon,\$scope){\n".
                 '// Template file: '.$full_tpl_path."\n".
                 $this->compile_str(file_get_contents($full_tpl_path)).
                 "}\n";

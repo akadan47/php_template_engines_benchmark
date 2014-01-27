@@ -19,13 +19,13 @@ class Gekkon {
         $this->tpl_name = '';
         $this->settings = array();
 
-        $this->data = array();
-        $this->data['global'] = &$this->data;
+        $this->data = new ArrayObject();
+        $this->data['global'] = $this->data;
     }
 
-    function register($name, &$data)
+    function register($name, $data)
     {
-        $this->data[$name] = &$data;
+        $this->data[$name] = $data;
     }
 
     function assign($name, $data)
@@ -64,15 +64,20 @@ class Gekkon {
         $tpl_name_save = $this->tpl_name;
         $this->tpl_name = $tpl_name;
 
-        if($scope_data !== false && $scope_data !== $this->data)
-        {
-            $scope = $scope_data;
-            $scope['global'] = &$this->data;
-        }
-        else $scope = $this->data;
-
-        $fn_name($this, $scope);
+        $fn_name($this, $this->get_scope($scope_data));
         $this->tpl_name = $tpl_name_save;
+    }
+
+    function get_scope($data = false)
+    {
+        if($data !== false && $data !== $this->data)
+        {
+            $scope = new ArrayObject($data);
+            $scope['global'] = $this->data;
+            return $scope;
+        }
+
+        return $this->data;
     }
 
     function get_display($tpl_name, $scope = false)

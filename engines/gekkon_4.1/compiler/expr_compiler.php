@@ -185,6 +185,27 @@ class GekkonExpCompiler {
         return $rez;
     }
 
+    function join_scopes($exp)
+    {
+        $values = explode('+', $exp);
+
+        if(count($values) > 1)
+        {
+            $exp = 'array_merge(';
+            foreach($values as $k => $v)
+            {
+                $value[$k] = '(array)'.$v;
+            }
+            $exp.=implode(', ', array_reverse($value));
+            $exp.=')';
+        }
+        else
+        {
+            $exp = $values[0];
+        }
+        return $exp;
+    }
+
 }
 
 // End Of Class ----------------------------------------------------------------

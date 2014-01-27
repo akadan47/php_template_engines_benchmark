@@ -19,12 +19,12 @@ class gekkon_tag_cycle extends gekkon_base_tag_single {
         }
 
         if(($values = $exp_compiler->parse_expression($values)) === false)
-                return $compiler->error_in_tag('Cannot parse args "'.$values.'"',
+                return $compiler->error_in_tag('Cannot parse args "'.$this->args_raw.'"',
                             $this);
         $values = $exp_compiler->split($values, ',');
 
         if(($values = $exp_compiler->compile_construction_expressions($values)) === false)
-                return $compiler->error_in_tag('Cannot compile args "'.$values.'"',
+                return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
                             $this);
 
         $rez = '';

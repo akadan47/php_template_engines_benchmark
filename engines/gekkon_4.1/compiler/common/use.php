@@ -9,6 +9,9 @@ class gekkon_tag_use extends gekkon_base_tag {
         if($exp === false)
                 return $compiler->error_in_tag('Cannot compile expression "'.$this->args_raw.'"',
                             $this);
+
+        $exp = $compiler->exp_compiler->join_scopes($exp);
+
         $saver = '$_gkn_use'.$compiler->getUID();
         return "$saver=\$scope;\n".
                 "\$scope=$exp;\n".
