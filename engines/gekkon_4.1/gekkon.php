@@ -20,7 +20,7 @@ class Gekkon {
         $this->settings = array();
 
         $this->data = array();
-        $this->data['global'] = $this->data;
+        $this->data['global'] = &$this->data;
     }
 
     function register($name, &$data)
@@ -67,7 +67,7 @@ class Gekkon {
         if($scope_data !== false && $scope_data !== $this->data)
         {
             $scope = $scope_data;
-            $scope['global'] = $this->data;
+            $scope['global'] = &$this->data;
         }
         else $scope = $this->data;
 
@@ -117,9 +117,9 @@ class Gekkon {
     {
         if(!$this->compiler)
         {
-            include_once 'settings.php';
-            Gekkon::include_dir($this->gekkon_path.'compiler');
+            include $this->gekkon_path.'settings.php';
             $this->settings += $settings;
+            Gekkon::include_dir($this->gekkon_path.'compiler');
             $this->compiler = new GekkonCompiler($this);
         }
         return $this->compiler->compile($tpl_name);
