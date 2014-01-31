@@ -4,15 +4,19 @@
 class Gekkon {
 
     var $version = 4.3;
-    var $bin_path;
-    var $tpl_path;
     var $gekkon_path;
+    var $compiler;
+    var $display_errors;
+    var $tpl_name;
+    var $settings;
+    var $loaded;
     var $data;
+    var $tplProvider;
+    var $binTplProvider;
+    var $cacheProvider;
 
     function __construct($tpl_path, $bin_path)
     {
-        $this->bin_path = $bin_path;
-        $this->tpl_path = $tpl_path;
         $this->gekkon_path = dirname(__file__).'/';
         $this->compiler = false;
         $this->display_errors = ini_get('display_errors') == 'on';
@@ -21,9 +25,9 @@ class Gekkon {
         $this->loaded = array();
         $this->data = new ArrayObject();
         $this->data['global'] = $this->data;
-        $this->tplProvider = new TemplateProviderFS($this->tpl_path);
-        $this->binTplProvider = new BinTplProviderFS($this->bin_path);
-        $this->cacheProvider = new CacheProviderFS($this->bin_path);
+        $this->tplProvider = new TemplateProviderFS($tpl_path);
+        $this->binTplProvider = new BinTplProviderFS($bin_path);
+        $this->cacheProvider = new CacheProviderFS($bin_path);
     }
 
     function assign($name, $data)
@@ -51,10 +55,12 @@ class Gekkon {
 
     function template($tpl_name)//refactor
     {
-        if(isset($this->loaded[$tpl_name])) return $this->loaded[$tpl_name];
+        $tpl_full_name = $this->tplProvider->get_full_name($tpl_name);
+        if(isset($this->loaded[$tpl_full_name]))
+                return $this->loaded[$tpl_full_name];
 
         if(($template = $this->tplProvider->load($tpl_name)) === false)
-                return $this->error('Template '.$tpl_name.' cannot be found at '.$tpl_file,
+                return $this->error('Template '.$tpl_name.' cannot be found at '.$tpl_full_name,
                             'gekkon');
 
         if($this->settings['force_compile']) $binTpl = false;
@@ -67,7 +73,7 @@ class Gekkon {
             $this->cacheProvider->clear_cache($binTpl);
         }
 
-        return $this->loaded[$tpl_name] = $binTpl;
+        return $this->loaded[$tpl_full_name] = $binTpl;
     }
 
     function clear_cache($tpl_name, $id = '')
@@ -180,38 +186,37 @@ class TemplateProviderFS {
         $this->base_dir = $base_dir;
     }
 
-    function load($name)
+    function load($short_name)
     {
-        $file = $this->full_path($name);
+        $file = $this->get_full_name($short_name);
         if(is_file($file))
-                return new TemplateFS($name, $this->get_association_name($name),
-                    $file);
+                return new TemplateFS($file, $this->get_association_name($file));
         return false;
     }
 
-    private function full_path($name)
+    function get_full_name($name)
     {
         return $this->base_dir.$name;
     }
 
     private function get_association_name($name)
     {
+        $name = basename($name);
         if(($t = strrpos($name, '_')) !== false) return substr($name, 0, $t);
         return $name;
     }
 
-    function getAssociated($template)
+    function get_associated($template)
     {
         $rez = array();
         $dir = dirname($template->name).'/';
-        if($dir === './') $dir = '';
-        $list = scandir($this->base_dir.$dir);
-        foreach($list as $file)
+        foreach(scandir($dir) as $file)
         {
             if($file[0] != '.')
             {
                 if(strrchr($file, '.') === '.tpl' && $template->association === $this->get_association_name($dir.$file))
-                        $rez[] = $this->load($dir.$file);
+                        $rez[] = new TemplateFS($dir.$file,
+                            $this->get_association_name($dir.$file));
             }
         }
         return $rez;
@@ -223,25 +228,23 @@ class TemplateProviderFS {
 
 class TemplateFS {
 
-    private $file;
     var $name;
     var $association;
 
-    function __construct($name, $association, $file)
+    function __construct($name, $association)
     {
-        $this->file = $file;
         $this->name = $name;
         $this->association = $association;
     }
 
     function check_bin($binTemplate)
     {
-        return filemtime($this->file) < $binTemplate->info['created'];
+        return filemtime($this->name) < $binTemplate->info['created'];
     }
 
     function source()
     {
-        return file_get_contents($this->file);
+        return file_get_contents($this->name);
     }
 
 }
@@ -263,9 +266,9 @@ class CacheProviderFS {
         return $this->baseDir.abs(crc32($binTemplate->info['association'])).'/cache/';
     }
 
-    private function cache_file($id = '')
+    private function cache_file($tpl_name, $id = '')
     {
-        $name = md5(serialize($id));
+        $name = md5($id.$tpl_name);
         return $name[0].$name[1].'/'.$name;
     }
 
@@ -275,13 +278,12 @@ class CacheProviderFS {
         {
             $cache_file = $this->cache_dir($binTemplate).
                     $this->cache_file($id);
-
             if(is_file($cache_file)) unlink($cache_file);
         }
         else Gekkon::clear_dir($this->cache_dir($binTemplate));
     }
 
-    function save($binTemplate, $id = '', $content)
+    function save($binTemplate, $content, $id)
     {
         Gekkon::create_dir(dirname($cache_file = $this->cache_dir($binTemplate).
                         $this->cache_file($id)));
@@ -291,7 +293,7 @@ class CacheProviderFS {
     function load($binTemplate, $id)
     {
         $cache_file = $this->cache_dir($binTemplate).
-                $this->cache_file($id);
+                $this->cache_file($binTemplate->info['name'], $id);
         if(is_file($cache_file))
                 return array(
                 'created' => filemtime($cache_file),

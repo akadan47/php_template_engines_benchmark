@@ -9,8 +9,8 @@ class Compiler {
     {
         $this->errors = array();
         $this->gekkon = $gekkon;
-        $this->tpl_name = '';
         $this->uid = 0;
+        $this->binTplCode = false;
         $this->exp_compiler = new ExpCompiler($this);
         $this->init();
     }
@@ -50,7 +50,7 @@ class Compiler {
     function compile($template)
     {
         $this->error = array();
-        $templateList = $this->gekkon->tplProvider->getAssociated($template);
+        $templateList = $this->gekkon->tplProvider->get_associated($template);
         $rez = new BinTemplateCodeSet();
         foreach($templateList as $tpl)
         {
@@ -188,8 +188,8 @@ class Compiler {
 
         if($line !== false)
         {
-            if($this->tpl_name !== '')
-                    $message .= 'in <b>"'.$this->tpl_name.'"</b> ';
+            if($this->binTplCode !== false)
+                    $message .= 'in <b>"'.$this->binTplCode->template->name.'"</b> ';
             $message .= 'on line '.$line.' ';
         }
         $this->errors[] = $message;

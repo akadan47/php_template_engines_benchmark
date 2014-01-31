@@ -23,7 +23,7 @@ class Tag_cache extends BaseTag {
                 "if(\$_gkn_cache===false || (time()-\$_gkn_cache['created']>$timeout && $timeout!==0)){\n".
                 "ob_start();\n".
                 $compiler->compile_str($this->content_raw, $this).
-                "\$gekkon->cacheProvider->save(\$template,$id,\$_gkn_cache_show=ob_get_clean());\n".
+                "\$gekkon->cacheProvider->save(\$template,\$_gkn_cache_show=ob_get_clean(),$id);\n".
                 "echo \$_gkn_cache_show;\n".
                 "}else{\n".
                 "echo \$_gkn_cache['content'];\n".

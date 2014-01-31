@@ -7,7 +7,7 @@ $method = $is_json ? "get_display" : "display";
 
 $start = microtime(true);
 $memory_start = memory_get_usage();
-require('../../engines/gekkon_4.1/gekkon.php');
+require('../../engines/gekkon_4.1/Gekkon.php');
 $gekkon = new Gekkon(dirname(__file__).'/tpl/', dirname(__file__).'/tpl/cache/');
 //if($is_clear) $gekkon->clear_cache("main.tpl");
 $time_init = microtime(true) - $start;
