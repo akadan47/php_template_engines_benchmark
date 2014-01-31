@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_static extends gekkon_tag_no_parse {
+namespace Gekkon;
+
+class Tag_static extends Tag_no_parse {
 
     function __construct($content = '')
     {

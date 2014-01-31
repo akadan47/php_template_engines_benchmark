@@ -1,8 +1,10 @@
 <?php
 
+namespace Gekkon;
+
 //version 1.1, Maxim Popov
 
-class GekkonLLParser {
+class LLParser {
 
     function __construct($_raw_grammar)
     {
@@ -233,10 +235,10 @@ class GekkonLLParser {
 
         array_push($_stack, array('s' => '$', 'k' => 0));
         array_push($_stack,
-            array(
+                array(
             's' => ($t = $this->_grammar[0]['left']),
             'k' => $_tree->go($_tree->add($t))
-            )
+                )
         );
 
         $limit = 0;
@@ -303,7 +305,7 @@ class GekkonLLParser {
                     {
                         $t = $x[$tt - $j - 1];
                         array_push($_stack,
-                            array('s' => $t, 'k' => $_tree->add($t)));
+                                array('s' => $t, 'k' => $_tree->add($t)));
                     }
                 }
             }

@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_elseif extends gekkon_base_tag_single {
+namespace Gekkon;
+
+class Tag_elseif extends BaseTagSingle {
 
     function compile($compiler)
     {
@@ -8,7 +10,7 @@ class gekkon_tag_elseif extends gekkon_base_tag_single {
         if(!in_array($this->parent->name, $allowed_context))
         {
             $compiler->error_in_tag('Can be used only inside of following tags: ['.
-                implode(', ', $allowed_context).']', $this);
+                    implode(', ', $allowed_context).']', $this);
             return false;
         }
 
@@ -16,7 +18,7 @@ class gekkon_tag_elseif extends gekkon_base_tag_single {
 
         if($exp === false)
                 return $compiler->error_in_tag('Cannot compile expression "'.$this->args_raw.'"',
-                    $this);
+                            $this);
 
         return "}elseif(".$exp."){\n";
     }

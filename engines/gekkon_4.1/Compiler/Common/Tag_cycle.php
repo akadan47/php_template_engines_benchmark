@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_cycle extends gekkon_base_tag_single {
+namespace Gekkon;
+
+class Tag_cycle extends BaseTagSingle {
 
     function compile($compiler)
     {

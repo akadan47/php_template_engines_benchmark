@@ -1,17 +1,19 @@
 <?php
 
-class gekkon_tag_empty extends gekkon_base_tag_single {
+namespace Gekkon;
+
+class Tag_else extends BaseTagSingle {
 
     function compile($compiler)
     {
-        $allowed_context = array('foreach');
+        $allowed_context = array('if');
         if(!in_array($this->parent->name, $allowed_context))
         {
             $compiler->error_in_tag('Can be used only inside of following tags: ['.
-                implode(', ', $allowed_context).']', $this);
+                    implode(', ', $allowed_context).']', $this);
             return false;
         }
-        return '';
+        return "}else{\n";
     }
 
 }

@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_base_tag_single extends gekkon_base_tag {
+namespace Gekkon;
+
+class BaseTagSingle extends BaseTag {
 
     function get_closer()
     {

@@ -1,7 +1,9 @@
 <?php
 
+namespace Gekkon;
+
 //sys_gettext is a tag system and tag in the same time
-class gekkon_tag_sys_comment extends gekkon_base_tag {
+class TagSysComment extends BaseTag {
 
     var $compiler;
 

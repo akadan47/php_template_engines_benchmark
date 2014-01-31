@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_ifchange extends gekkon_base_tag {
+namespace Gekkon;
+
+class Tag_ifchange extends BaseTag {
 
     function compile($compiler)
     {
@@ -11,7 +13,7 @@ class gekkon_tag_ifchange extends gekkon_base_tag {
             $exp = $compiler->exp_compiler->compile_exp($this->args_raw);
             if($exp === false)
                     return $compiler->error_in_tag('Cannot compile expression "'.$this->args_raw.'"',
-                        $this);
+                                $this);
         }
 
         //handle else
@@ -24,8 +26,8 @@ class gekkon_tag_ifchange extends gekkon_base_tag {
         if(isset($content[1]))
         {
             $else = "else {\n".
-                $compiler->compile_parsed_str($content[1]).
-                "}\n";
+                    $compiler->compile_parsed_str($content[1]).
+                    "}\n";
         }
         $content = $content[0];
 
@@ -41,9 +43,9 @@ class gekkon_tag_ifchange extends gekkon_base_tag {
         else
         {
             $value = "ob_start();\n".
-                $compiler->compile_parsed_str($content).
-                "$var_cur = ob_get_contents();".
-                "ob_end_clean();\n";
+                    $compiler->compile_parsed_str($content).
+                    "$var_cur = ob_get_contents();".
+                    "ob_end_clean();\n";
             $show = "echo $var_cur;\n";
         }
 
@@ -51,11 +53,11 @@ class gekkon_tag_ifchange extends gekkon_base_tag {
 
 
         return $value.
-            $condition.
-            $show.
-            "}\n".
-            $else.
-            "$var_last=$var_cur;\n";
+                $condition.
+                $show.
+                "}\n".
+                $else.
+                "$var_last=$var_cur;\n";
     }
 
 }

@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_echo extends gekkon_base_tag_single {
+namespace Gekkon;
+
+class Tag_echo extends BaseTagSingle {
 
     function compile($compiler)
     {
@@ -11,7 +13,7 @@ class gekkon_tag_echo extends gekkon_base_tag_single {
                 return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
                             $this);
 
-        return $compiler->out($exp);
+        return $compiler->compileOutput($exp);
     }
 
 }

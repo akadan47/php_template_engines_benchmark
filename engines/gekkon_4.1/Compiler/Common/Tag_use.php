@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_use extends gekkon_base_tag {
+namespace Gekkon;
+
+class Tag_use extends BaseTag {
 
     function compile($compiler)
     {

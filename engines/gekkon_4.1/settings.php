@@ -3,19 +3,19 @@
 $settings = array(
     'auto_escape' => false,
     'tag_systems' => array(
-        'echo' => array(
+        'Echo' => array(
             'open' => '{',
             'close' => '}',
         ),
-        'common' => array(
+        'Common' => array(
             'open' => '{',
             'close' => '}',
         ),
-        'gettext' => array(
+        'Gettext' => array(
             'open' => '{{',
             'close' => '}}',
         ),
-        'comment' => array(
+        'Comment' => array(
             'open' => '{#',
             'close' => '#}',
         ),

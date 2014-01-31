@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_no_parse extends gekkon_base_tag {
+namespace Gekkon;
+
+class Tag_no_parse extends BaseTag {
 
     function compile($compiler)
     {

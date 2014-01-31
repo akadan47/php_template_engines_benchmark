@@ -1,6 +1,8 @@
 <?php
 
-class GekkonLexer {
+namespace Gekkon;
+
+class Lexer {
 
     var $str;
     var $length;
@@ -30,7 +32,7 @@ class GekkonLexer {
                     return false;
                 }
                 $this->save(substr($this->str, $this->step, $i - $this->step + 1),
-                    'v');
+                        'v');
                 $this->step = $i;
             }
             $this->step++;
@@ -168,7 +170,7 @@ class GekkonLexer {
                     else
                     {
                         $word = substr($this->str, $this->step,
-                            $i - $this->step + 1);
+                                $i - $this->step + 1);
                         $this->save($word, 's');
                         $word = '';
                         $this->step = $i;
@@ -189,7 +191,7 @@ class GekkonLexer {
                         {
                             $i2 = $this->find_close($this->step, '(', ')', ',');
                             $word = substr($this->str, $this->step + 1,
-                                $i2 - $this->step - 1);
+                                    $i2 - $this->step - 1);
                             $this->save($word, 'e');
 
                             $word = '';

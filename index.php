@@ -15,26 +15,29 @@
 
         <script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="/static/js/benchmark.js"></script>
-            <?php
-                error_reporting(0);
-                $engines = array();
-                if ($handle = opendir('page')) {
-                    while (false !== ($file = readdir($handle)))
-                    {
-                        if (!in_array($file, array('.', '..', '.DS_Store', 'Thumbs.db')))
-                        {
-                            $engine = array(
-                                'id' => str_replace(' ', '_', strtolower(explode('_', $file)[0])).str_replace('-','', explode('_', $file)[1]),
-                                'name' => ucfirst(explode('_', $file)[0]),
-                                'version' => str_replace('-','.', explode('_', $file)[1]),
-                                'url' => '/page/'.$file.'/'
-                            );
-                            array_push($engines, $engine);
-                        }
-                    }
-                    closedir($handle);
+        <?php
+        error_reporting(0);
+        $engines = array();
+        if($handle = opendir('page'))
+        {
+            while(false !== ($file = readdir($handle)))
+            {
+                if(!in_array($file, array('.', '..', '.DS_Store', 'Thumbs.db')))
+                {
+                    $engine = array(
+                        'id' => $file,
+                        'name' => ucfirst(strpos($file, '_') ? substr($file, 0,
+                                                strpos($file, '_')) : $file),
+                        'version' => str_replace('-', '.',
+                                substr(strstr($file, '_'), 1)),
+                        'url' => '/page/'.$file.'/'
+                    );
+                    array_push($engines, $engine);
                 }
-            ?>
+            }
+            closedir($handle);
+        }
+        ?>
     </head>
     <body>
         <div class="container">
@@ -55,7 +58,10 @@
                     </div>
 
                     <div class="checkboxes" id="checkboxes">
-                        <?php foreach ($engines as $engine) { ?>
+                        <?php
+                        foreach($engines as $engine)
+                        {
+                            ?>
                             <span class="checkbox"><label><input type="checkbox" checked="checked" id="engine_<?php echo $engine["id"] ?>" data-id="<?php echo $engine["id"] ?>" data-name="<?php echo $engine["name"] ?>" data-version="<?php echo $engine["version"] ?>" data-url="<?php echo $engine["url"] ?>"> <b><?php echo $engine["name"] ?></b> <?php echo $engine["version"] ?></label></span>
                         <?php } ?>
                     </div>
@@ -101,12 +107,12 @@
                             <div class="panel-body">
                                 <table class="table hidden" id="table_init">
                                     <thead>
-                                    <tr>
-                                        <th class="name"><span>Engine</span></th>
-                                        <th><span><b>Avg</b></span></th>
-                                        <th><span>Min</span></th>
-                                        <th><span>Max</span></th>
-                                    </tr>
+                                        <tr>
+                                            <th class="name"><span>Engine</span></th>
+                                            <th><span><b>Avg</b></span></th>
+                                            <th><span>Min</span></th>
+                                            <th><span>Max</span></th>
+                                        </tr>
                                     </thead>
                                     <tbody id="score_init">
 
@@ -120,12 +126,12 @@
                             <div class="panel-body">
                                 <table class="table hidden" id="table_render">
                                     <thead>
-                                    <tr>
-                                        <th class="name"><span>Engine</span></th>
-                                        <th><span><b>Avg</b></span></th>
-                                        <th><span>Min</span></th>
-                                        <th><span>Max</span></th>
-                                    </tr>
+                                        <tr>
+                                            <th class="name"><span>Engine</span></th>
+                                            <th><span><b>Avg</b></span></th>
+                                            <th><span>Min</span></th>
+                                            <th><span>Max</span></th>
+                                        </tr>
                                     </thead>
                                     <tbody id="score_render">
 
@@ -139,10 +145,10 @@
                             <div class="panel-body">
                                 <table class="table hidden" id="table_memory">
                                     <thead>
-                                    <tr>
-                                        <th class="name"><span>Engine</span></th>
-                                        <th><span><b>Usage</b></span></th>
-                                    </tr>
+                                        <tr>
+                                            <th class="name"><span>Engine</span></th>
+                                            <th><span><b>Usage</b></span></th>
+                                        </tr>
                                     </thead>
                                     <tbody id="score_memory">
 
@@ -157,7 +163,7 @@
         </div>
 
         <script type="text/javascript">
-            $(function () {
+            $(function() {
                 var el_start__button = $('#start');
                 var el_process = $('#process');
                 var el_sidebar = $('#sidebar');
@@ -211,14 +217,14 @@
                 }
 
                 function on_start(engine) {
-                    var container = $("#chart_"+engine.id);
+                    var container = $("#chart_" + engine.id);
                     engine.__generation = {
                         data: [],
                         lines: {
                             show: true,
                             fill: true,
                             lineWidth: 0,
-                            fillColor: { colors: ["#00fa03", "#00fa03"] }
+                            fillColor: {colors: ["#00fa03", "#00fa03"]}
                         }
                     };
                     engine.__init = {
@@ -227,11 +233,13 @@
                             show: true,
                             fill: true,
                             lineWidth: 0,
-                            fillColor: { colors: ["#0074ff", "#0074ff"] }
+                            fillColor: {colors: ["#0074ff", "#0074ff"]}
                         }
                     };
                     engine.series = [engine.__generation, engine.__init];
-                    function tick_format(v, xaxis) {return " "}
+                    function tick_format(v, xaxis) {
+                        return " "
+                    }
                     engine.plot = $.plot(container, engine.series, {
                         grid: {
                             labelMargin: 0,
@@ -242,7 +250,7 @@
                         },
                         xaxis: {
                             min: 0,
-                            max: el_slider.val()-1,
+                            max: el_slider.val() - 1,
                             ticks: 50,
                             tickLength: 0,
                             minTickSize: 1,
@@ -262,7 +270,7 @@
                     engine.__init.data = data['init'];
                     engine.plot.setData(engine.series);
                     engine.plot.draw();
-                    el_main_progress_bar.css('width', global_percent+"%");
+                    el_main_progress_bar.css('width', global_percent + "%");
                 }
 
                 function on_complete(engine, results) {
@@ -276,15 +284,15 @@
                         el_table__memory.removeClass('hidden');
                     $('.panel-warning').removeClass('panel-warning');
 
-                    el_score__generation.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.generation.avg+'</b></td><td>'+results.generation.min+'</td><td>'+results.generation.max+'</td></tr>'));
-                    el_score__init.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.init.avg+'</b></td><td>'+results.init.min+'</td><td>'+results.init.max+'</td></tr>'));
-                    el_score__render.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.render.avg+'</b></td><td>'+results.render.min+'</td><td>'+results.render.max+'</td></tr>'));
-                    el_score__memory.append($('<tr><td class="name"><b>'+engine.name+'</b> '+ engine.version +'</td><td><b>'+results.memory+'</b></td></tr>'));
+                    el_score__generation.append($('<tr><td class="name"><b>' + engine.name + '</b> ' + engine.version + '</td><td><b>' + results.generation.avg + '</b></td><td>' + results.generation.min + '</td><td>' + results.generation.max + '</td></tr>'));
+                    el_score__init.append($('<tr><td class="name"><b>' + engine.name + '</b> ' + engine.version + '</td><td><b>' + results.init.avg + '</b></td><td>' + results.init.min + '</td><td>' + results.init.max + '</td></tr>'));
+                    el_score__render.append($('<tr><td class="name"><b>' + engine.name + '</b> ' + engine.version + '</td><td><b>' + results.render.avg + '</b></td><td>' + results.render.min + '</td><td>' + results.render.max + '</td></tr>'));
+                    el_score__memory.append($('<tr><td class="name"><b>' + engine.name + '</b> ' + engine.version + '</td><td><b>' + results.memory + '</b></td></tr>'));
 
-                    el_table__generation.trigger('update').trigger("sorton", [[[1,0]]]);
-                    el_table__init.trigger('update').trigger("sorton", [[[1,0]]]);
-                    el_table__render.trigger('update').trigger("sorton", [[[1,0]]]);
-                    el_table__memory.trigger('update').trigger("sorton", [[[1,0]]]);
+                    el_table__generation.trigger('update').trigger("sorton", [[[1, 0]]]);
+                    el_table__init.trigger('update').trigger("sorton", [[[1, 0]]]);
+                    el_table__render.trigger('update').trigger("sorton", [[[1, 0]]]);
+                    el_table__memory.trigger('update').trigger("sorton", [[[1, 0]]]);
                 }
 
                 function on_finish() {
@@ -313,16 +321,16 @@
                     check_buttons();
                 });
 
-                list_checkboxes.on('click', function(){
+                list_checkboxes.on('click', function() {
                     check_buttons();
                 });
 
-                el_slider.on("slider:ready slider:changed", function (event, data) {
+                el_slider.on("slider:ready slider:changed", function(event, data) {
                     el_slider_value.html(data.value + ' requests');
                 });
-                el_slider.simpleSlider({'range': [50,1000], 'step': 50, 'snap': true, 'highlight': true, 'theme': 'volume'});
+                el_slider.simpleSlider({'range': [50, 1000], 'step': 50, 'snap': true, 'highlight': true, 'theme': 'volume'});
 
-                el_start__button.on('click', function(){
+                el_start__button.on('click', function() {
                     el_start__button.attr('disabled', 'disabled');
                     el_process.children().remove();
                     el_score__generation.children().remove();
@@ -349,7 +357,7 @@
                     $('.headerSortUp').removeClass('headerSortUp');
                     var checked_engines = [];
 
-                    $.each($("#checkboxes input[type='checkbox']:checked"), function(i, item){
+                    $.each($("#checkboxes input[type='checkbox']:checked"), function(i, item) {
                         var item = $(item);
                         checked_engines.push({
                             'id': item.data('id'),
@@ -359,17 +367,17 @@
                         });
                     });
 
-                    $.each(checked_engines, function(i, engine){
+                    $.each(checked_engines, function(i, engine) {
                         var engine_panel = $(
-                            '<div id="panel_' + engine.id + '" class="panel panel-default">' +
+                                '<div id="panel_' + engine.id + '" class="panel panel-default">' +
                                 '<div class="panel-heading">' +
-                                    '<h3 class="panel-title"><b>'+engine.name+'</b> '+ engine.version +' <span class="pull-right label label-default"><a target="_blank" href="'+engine.url+'">HTML</a></span> <span class="pull-right legend"><span class="point point-init"></span>initialization <span class="point point-render"></span>render</span> </h3>' +
+                                '<h3 class="panel-title"><b>' + engine.name + '</b> ' + engine.version + ' <span class="pull-right label label-default"><a target="_blank" href="' + engine.url + '">HTML</a></span> <span class="pull-right legend"><span class="point point-init"></span>initialization <span class="point point-render"></span>render</span> </h3>' +
                                 '</div>' +
                                 '<div class="panel-body panel-chart">' +
-                                    '<div id="chart_' + engine.id + '" style="width: 605px; height: 100px"></div>' +
+                                '<div id="chart_' + engine.id + '" style="width: 605px; height: 100px"></div>' +
                                 '</div>' +
-                            '</div>'
-                        );
+                                '</div>'
+                                );
                         el_process.append(engine_panel);
                         el_result__generation.removeClass('hidden').removeClass('panel-warning');
                         el_result__init.removeClass('hidden').removeClass('panel-warning');

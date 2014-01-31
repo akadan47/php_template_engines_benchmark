@@ -1,7 +1,9 @@
 <?php
 
+namespace Gekkon;
+
 //version 2.1
-class GekkonCompiler {
+class Compiler {
 
     function __construct(&$gekkon)
     {
@@ -9,7 +11,7 @@ class GekkonCompiler {
         $this->gekkon = $gekkon;
         $this->tpl_name = '';
         $this->uid = 0;
-        $this->exp_compiler = new GekkonExpCompiler($this);
+        $this->exp_compiler = new ExpCompiler($this);
         $this->init();
     }
 
@@ -20,9 +22,10 @@ class GekkonCompiler {
         $tag_system_map = array();
         foreach($this->gekkon->settings['tag_systems'] as $sys => $data)
         {
-            $class_name = 'gekkon_tag_sys_'.$sys;
+            $class_name = __NAMESPACE__.'\TagSys'.$sys;
             if(class_exists($class_name))
             {
+
                 $this->tag_systems[$sys] = new $class_name($this, $data);
                 $tokens[$data['open']][$data['close']] = preg_quote($data['close'],
                         '/');
@@ -44,51 +47,31 @@ class GekkonCompiler {
         $this->close_tokens = $close_tokens;
     }
 
-    function compile($tpl_name)
+    function compile($template)
     {
         $this->error = array();
-        $tpl_file = $this->gekkon->full_tpl_path($tpl_name);
-        if(!is_file($tpl_file))
+        $templateList = $this->gekkon->tplProvider->getAssociated($template);
+        $rez = new BinTemplateCodeSet();
+        foreach($templateList as $tpl)
         {
-            $this->error('Cannot find '.$tpl_file, 'gekkon_compiller');
-            return false;
+            if(($binTpl = $this->compile_one($tpl)) !== false)
+                    $rez[$tpl->name] = $binTpl;
         }
-
-        $this->file_list = array();
-        $this->bin_file = $this->gekkon->full_bin_path($tpl_name);
-
-        $this->get_file_list();
-
-        $rez_data = "<?php\n";
-        $rez_flag = true;
-
-        if(!is_dir($t = dirname($this->bin_file))) mkdir($t, 0777);
-
-        foreach($this->file_list as $tpl)
-        {
-            if(($t = $this->compile_file($tpl)) !== false) $rez_data .= $t;
-            else $rez_flag = false;
-        }
-        file_put_contents($this->bin_file, $rez_data);
-        return $rez_flag;
+        return $rez;
     }
 
-    function compile_file($tpl_name)
+    function compile_one($template)
     {
-        $this->tpl_name = $tpl_name;
-        $full_tpl_path = $this->gekkon->full_tpl_path($tpl_name);
-        return "\nfunction ".$this->gekkon->fn_name($tpl_name)."(\$gekkon,\$scope){\n".
-                '// Template file: '.$full_tpl_path."\n".
-                $this->compile_str(file_get_contents($full_tpl_path)).
-                "}\n";
-        $this->tpl_name = '';
+        $this->binTplCode = new BinTemplateCode($template);
+        $this->binTplCode->set($this->compile_str($template->source()));
+        return $this->binTplCode;
     }
 
     function compile_str($_str, $parent = false)
     {
         if($parent === false)
         {
-            $parent = new gekkon_base_tag($this);
+            $parent = new BaseTag($this);
             $parent->line = 1;
             $parent->system = 'root';
             $parent->parent = false;
@@ -104,8 +87,7 @@ class GekkonCompiler {
         $rez = '';
         foreach($data as $tag)
         {
-            $t = $tag->compile($this);
-            if($t !== false) $rez.=$t;
+            if(($t = $tag->compile($this)) !== false) $rez.=$t;
             else $this->flush_errors();
         }
         return $rez;
@@ -121,7 +103,7 @@ class GekkonCompiler {
             $_tag = $this->find_tag($_str);
             if($_tag === false)
             {
-                $rez[] = new gekkon_tag_static($_str);
+                $rez[] = new Tag_static($_str);
                 break;
             }
 
@@ -129,7 +111,7 @@ class GekkonCompiler {
 
             if($_tag->open_start > 0)
             {
-                $before = new gekkon_tag_static(
+                $before = new Tag_static(
                         substr($_str, 0, $_tag->open_start));
                 $rez[] = $before;
                 //echo $_line, '>', trim($before->content_raw), "\n";
@@ -171,7 +153,7 @@ class GekkonCompiler {
 
         if($open_raw === false) return false;
 
-        $_tag = new gekkon_base_tag($this);
+        $_tag = new BaseTag($this);
         $_tag->open_raw = $open_raw;
         $_tag->start_token = $open_start_token;
         $_tag->end_token = $open_end_token;
@@ -188,23 +170,8 @@ class GekkonCompiler {
             $_tag = $this->tag_systems[$tag_system]->try_parse($_tag, $_str);
             if($_tag->system !== '') return $_tag;
         }
-        return new gekkon_tag_static(
+        return new Tag_static(
                 $_tag->start_token.$_tag->open_raw.$_tag->end_token);
-    }
-
-    function get_file_list($dir = '')
-    {
-        $list = scandir($this->gekkon->tpl_path.$dir);
-        foreach($list as $file)
-        {
-            if($file[0] != '.')
-            {
-                if(is_dir($this->gekkon->tpl_path.$dir.$file))
-                        $this->get_file_list($dir.$file.'/');
-                else if(strrchr($file, '.') == '.tpl' && $this->bin_file == $this->gekkon->full_bin_path($dir.$file))
-                        $this->file_list[] = $dir.$file;
-            }
-        }
     }
 
     function error_in_tag($msg, $_tag)
@@ -265,7 +232,7 @@ class GekkonCompiler {
         return $rez;
     }
 
-    function out($data, $just_code = false)
+    function compileOutput($data, $just_code = false)
     {
 
         if($just_code) $rez = '';
@@ -279,3 +246,81 @@ class GekkonCompiler {
 }
 
 // End Of Class ----------------------------------------------------------------
+
+class BinTemplateCode {
+
+    var $blocks = array();
+    var $current;
+    var $blocks_stack = array();
+    var $template;
+
+    function __construct($template)
+    {
+        $this->template = $template;
+        $this->pushBlock('main');
+    }
+
+    function pushBlock($name)
+    {
+        array_push($this->blocks_stack, $name);
+        $this->current = $name;
+        if(!isset($this->blocks[$name])) $this->blocks[$name] = '';
+    }
+
+    function popBlock()
+    {
+        $this->current = array_pop($this->blocks_stack);
+    }
+
+    function add($code)
+    {
+        $this->blocks[$this->current] .= $code;
+    }
+
+    function addBefore($code)
+    {
+        $this->blocks[$this->current] = $code.$this->blocks[$this->current];
+    }
+
+    function set($code)
+    {
+        $this->blocks[$this->current] = $code;
+    }
+
+    function code()
+    {
+        $rez = "array('blocks'=> array(\n";
+        foreach($this->blocks as $name => $block)
+        {
+            $rez .= "'$name'=>function (\$template,\$gekkon,\$scope){\n".
+                    $block.
+                    "},\n";
+        }
+        $info = array(
+            'created' => time(),
+            'name' => $this->template->name,
+            'association' => $this->template->association,
+        );
+        $rez.="),'info'=>".var_export($info, true).")\n";
+        return $rez;
+    }
+
+}
+
+// end of class
+
+class BinTemplateCodeSet extends \ArrayObject {
+
+    function code()
+    {
+        $rez = "array(\n";
+        foreach($this as $name => $tplCode)
+        {
+            $rez .= "'$name'=>".$tplCode->code().',';
+        }
+        $rez .= ");\n";
+        return $rez;
+    }
+
+}
+

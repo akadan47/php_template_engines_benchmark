@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_base_tag {
+namespace Gekkon;
+
+class BaseTag {
 
     var $parent;
     var $args_raw = '';
@@ -28,13 +30,13 @@ class gekkon_base_tag {
     function total_lines()
     {
         return $this->open_lines() +
-            substr_count($this->content_raw, "\n");
+                substr_count($this->content_raw, "\n");
     }
 
     function open_lines()
     {
         return
-            substr_count($this->open_raw, "\n");
+                substr_count($this->open_raw, "\n");
     }
 
     function copy($_tag)

@@ -1,7 +1,9 @@
 <?php
 
+namespace Gekkon;
+
 //sys_gettext is a tag system and tag in the same time
-class gekkon_tag_sys_gettext extends gekkon_base_tag_single {
+class TagSysGettext extends BaseTagSingle {
 
     var $compiler;
 
@@ -13,7 +15,7 @@ class gekkon_tag_sys_gettext extends gekkon_base_tag_single {
     function try_parse($_tag, &$_str)
     {
         if($_tag->open_raw === '') return $_tag;
-        $_new_tag = new gekkon_tag_sys_gettext($this->compiler);
+        $_new_tag = new TagSysGettext($this->compiler);
         $_new_tag->copy($_tag);
         $_new_tag->args_raw = $_new_tag->open_raw;
         $_new_tag->system = 'gettext';
@@ -32,14 +34,14 @@ class gekkon_tag_sys_gettext extends gekkon_base_tag_single {
                     return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
                                 $this);
 
-            return $compiler->out("gettext($exp)");
+            return $compiler->compileOutput("gettext($exp)");
             $static = create_function('$gekkon,$_scope', "return gettext($exp);");
 
-            return $compiler->out(var_export($static($compiler->gekkon,
+            return $compiler->compileOutput(var_export($static($compiler->gekkon,
                                             $compiler->gekkon->data), true));
         }
         $static = create_function('',
-                "return ".$compiler->out(
+                "return ".$compiler->compileOutput(
                         var_export(gettext($this->args_raw), true), true).";");
         return $static();
     }

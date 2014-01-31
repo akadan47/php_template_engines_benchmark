@@ -1,12 +1,14 @@
 <?php
 
-class GekkonExpCompiler {
+namespace Gekkon;
+
+class ExpCompiler {
 
     function __construct(&$compiler)
     {
         $this->compiler = $compiler;
         $this->arg_compiler = new GekkonArgCompiler($this);
-        $this->arg_lexer = new GekkonLexer();
+        $this->arg_lexer = new Lexer();
     }
 
     function compile_construction_expressions($data)
@@ -108,8 +110,8 @@ class GekkonExpCompiler {
     function check_exp_syntax($code)
     {
         if(strpos($code, '=>') !== false)
-                return GekkonExpCompiler::check_syntax('$x=array('.$code.');');
-        return GekkonExpCompiler::check_syntax('$x='.$code.';');
+                return ExpCompiler::check_syntax('$x=array('.$code.');');
+        return ExpCompiler::check_syntax('$x='.$code.';');
     }
 
     function parse_expression($str)
@@ -218,7 +220,7 @@ class GekkonArgCompiler {
     {
         $this->exp_compiler = $exp_compiler;
 
-        $this->parser = new GekkonLLParser(array(
+        $this->parser = new LLParser(array(
             '<gekkon_var>' => '<object><object_ext> | <non_object><non_object_ext> | w<constant_ext>',
             '<object>' => '$w | @w ',
             '<non_object>' => 's | d<digit_ext> | (e)',

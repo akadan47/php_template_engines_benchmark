@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_sys_common {
+namespace Gekkon;
+
+class TagSysCommon {
 
     var $compiler;
 
@@ -17,7 +19,7 @@ class gekkon_tag_sys_common {
         $_tag_name = $preg_data[1];
         $_tag_args_raw = isset($preg_data[2]) ? $preg_data[2] : '';
 
-        $handler = 'gekkon_tag_'.$_tag_name;
+        $handler = __NAMESPACE__.'\Tag_'.$_tag_name;
         if(!class_exists($handler)) return $_tag;
 
         $_new_tag = new $handler($this->compiler);

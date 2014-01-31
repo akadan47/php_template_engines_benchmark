@@ -3,7 +3,7 @@
 //version 4.2
 class Gekkon {
 
-    var $version = 4.2;
+    var $version = 4.3;
     var $bin_path;
     var $tpl_path;
     var $gekkon_path;
@@ -17,15 +17,13 @@ class Gekkon {
         $this->compiler = false;
         $this->display_errors = ini_get('display_errors') == 'on';
         $this->tpl_name = '';
-        $this->settings = array();
-
+        $this->settings = array('force_compile' => false);
+        $this->loaded = array();
         $this->data = new ArrayObject();
         $this->data['global'] = $this->data;
-    }
-
-    function register($name, $data)
-    {
-        $this->data[$name] = $data;
+        $this->tplProvider = new TemplateProviderFS($this->tpl_path);
+        $this->binTplProvider = new BinTplProviderFS($this->bin_path);
+        $this->cacheProvider = new CacheProviderFS($this->bin_path);
     }
 
     function assign($name, $data)
@@ -33,39 +31,54 @@ class Gekkon {
         $this->data[$name] = $data;
     }
 
+    function register($name, $data)
+    {
+        $this->data[$name] = $data;
+    }
+
     function display($tpl_name, $scope_data = false)
     {
-        $fn_name = $this->fn_name($tpl_name);
-        if(!function_exists($fn_name))
+        if(($binTemplate = $this->template($tpl_name)) !== false)
+                $binTemplate->display($this, $this->get_scope($scope_data));
+    }
+
+    function get_display($tpl_name, $scope_data = false)
+    {
+        ob_start();
+        $this->display($tpl_name, $scope_data);
+        return ob_get_clean();
+    }
+
+    function template($tpl_name)//refactor
+    {
+        if(isset($this->loaded[$tpl_name])) return $this->loaded[$tpl_name];
+
+        if(($template = $this->tplProvider->load($tpl_name)) === false)
+                return $this->error('Template '.$tpl_name.' cannot be found at '.$tpl_file,
+                            'gekkon');
+
+        if($this->settings['force_compile']) $binTpl = false;
+        else $binTpl = $this->binTplProvider->load($template);
+
+        if($binTpl === false || !$template->check_bin($binTpl))
         {
-
-            $tpl_time = 0;
-            if(is_file($tpl_file = $this->full_tpl_path($tpl_name)))
-                    $tpl_time = filemtime($tpl_file);
-
-            $bin_time = 0;
-            if(is_file($bin_file = $this->full_bin_path($tpl_name)))
-                    $bin_time = filemtime($bin_file);
-
-            if($tpl_time == 0)
-                    return $this->error('Template '.$tpl_name.' cannot be found at '.$tpl_file,
-                                'gekkon');
-
-            if($bin_time < $tpl_time)
-            {
-                $this->clear_cache($tpl_name);
-                if(!$this->compile($tpl_name))
-                        return $this->error('Cannot compile '.$tpl_name,
-                                    'gekkon');
-            }
-            include_once $bin_file;
+            if(($binTpl = $this->compile($template)) === false)
+                    return $this->error('Cannot compile '.$tpl_name, 'gekkon');
+            $this->cacheProvider->clear_cache($binTpl);
         }
 
-        $tpl_name_save = $this->tpl_name;
-        $this->tpl_name = $tpl_name;
+        return $this->loaded[$tpl_name] = $binTpl;
+    }
 
-        $fn_name($this, $this->get_scope($scope_data));
-        $this->tpl_name = $tpl_name_save;
+    function clear_cache($tpl_name, $id = '')
+    {
+        if(($template = $this->tplProvider->load($tpl_name)) === false)
+                return $this->error('Template '.$tpl_name.' cannot be found at '.$tpl_file,
+                            'gekkon');
+        if(($binTpl = $this->binTplProvider->load($template)) !== false)
+                $this->cacheProvider->clear_cache($binTpl, $id);
+
+        $this->binTplProvider->clear_cache($template);
     }
 
     function get_scope($data = false)
@@ -76,78 +89,21 @@ class Gekkon {
             $scope['global'] = $this->data;
             return $scope;
         }
-
         return $this->data;
     }
 
-    function get_display($tpl_name, $scope = false)
-    {
-        ob_start();
-        $this->display($tpl_name, $scope);
-        $out = ob_get_contents();
-        ob_end_clean();
-        return $out;
-    }
-
-    function fn_name($tpl_name)
-    {
-        return 'gekkon_tpl_'.md5($this->tpl_path.$tpl_name);
-    }
-
-    function cache_dir($tpl_name)
-    {
-        return dirname($this->full_bin_path($tpl_name)).'/cache/';
-    }
-
-    function cache_file($tpl_name, $id = '')
-    {
-        $name = md5(serialize($id).$tpl_name);
-        return $name[0].$name[1].'/'.$name;
-    }
-
-    function clear_cache($tpl_name, $id = '')
-    {
-        if($id !== '')
-        {
-            $cache_file = $this->cache_dir($tpl_name).
-                    $this->cache_file($tpl_name, $id);
-
-            if(is_file($cache_file)) unlink($cache_file);
-            return;
-        }
-        else $this->clear_dir(dirname($this->full_bin_path($tpl_name)).'/');
-    }
-
-    function compile($tpl_name)
+    function compile($template)
     {
         if(!$this->compiler)
         {
             include $this->gekkon_path.'settings.php';
             $this->settings += $settings;
-            Gekkon::include_dir($this->gekkon_path.'compiler');
-            $this->compiler = new GekkonCompiler($this);
+            Gekkon::include_dir($this->gekkon_path.'Compiler');
+            $this->compiler = new Gekkon\Compiler($this);
         }
-        return $this->compiler->compile($tpl_name);
-    }
-
-    function full_tpl_path($tpl_name)
-    {
-        return $this->tpl_path.$tpl_name;
-    }
-
-    function full_bin_path($tpl_name)
-    {
-        if(($t = strrpos($tpl_name, '_')) !== false)
-        {
-            $tpl_name = $bin_name = basename(substr($tpl_name, 0, $t)).'.tpl';
-            if(($t = strrpos($tpl_name, '_')) !== false)
-                    $tpl_name = $bin_name = substr($tpl_name, 0, $t).'.tpl';
-        }
-        else $bin_name = basename($tpl_name);
-
-        $bin_path = $this->bin_path.abs(crc32($this->full_tpl_path($tpl_name))).'/';
-
-        return $bin_path.$bin_name.'.php';
+        $this->binTplProvider->save($template,
+                $this->compiler->compile($template));
+        return $this->binTplProvider->load($template);
     }
 
     function error($msg, $object = false)
@@ -166,22 +122,18 @@ class Gekkon {
     function include_dir($path)
     {
         $path = rtrim($path, '/');
-        $dirs = array();
         if(is_dir($path))
         {
-            $files = scandir($path);
-            foreach($files as $file)
+            $dirs = array();
+            foreach(scandir($path) as $file)
             {
                 if($file[0] != '.')
                 {
-                    if(is_dir($path.'/'.$file)) $dirs[] = $path.'/'.$file;
-                    else
+                    $to_include = $path.'/'.$file;
+                    if(is_dir($to_include)) $dirs[] = $to_include;
+                    elseif(strtolower(strrchr($to_include, '.')) === '.php')
                     {
-                        $to_include = $path.'/'.$file;
-                        if(strtolower(strrchr($to_include, '.')) === '.php')
-                        {
-                            include_once $to_include;
-                        }
+                        include_once $to_include;
                     }
                 }
             }
@@ -192,21 +144,16 @@ class Gekkon {
     function clear_dir($path)
     {
         $path = rtrim($path, '/').'/';
-        if(is_dir($path) && $dh = opendir($path))
+        if(is_dir($path))
         {
-            while(($file = readdir($dh)) !== false)
+            foreach(scandir($path) as $file)
             {
                 if($file[0] != '.')
                 {
-                    if(is_dir($path.$file))
-                    {
-                        Gekkon::clear_dir($path.$file.'/');
-                        rmdir($path.$file);
-                    }
+                    if(is_dir($path.$file)) Gekkon::clear_dir($path.$file.'/');
                     else unlink($path.$file);
                 }
             }
-            closedir($dh);
         }
     }
 
@@ -215,8 +162,7 @@ class Gekkon {
         $path = rtrim($path, '/');
         if(!is_dir($path))
         {
-            $parent = dirname($path);
-            Gekkon::create_dir($parent);
+            Gekkon::create_dir(dirname($path));
             mkdir($path);
         }
     }
@@ -224,3 +170,206 @@ class Gekkon {
 }
 
 //end of class -----------------------------------------------------------------
+
+class TemplateProviderFS {
+
+    private $base_dir;
+
+    function __construct($base_dir)
+    {
+        $this->base_dir = $base_dir;
+    }
+
+    function load($name)
+    {
+        $file = $this->full_path($name);
+        if(is_file($file))
+                return new TemplateFS($name, $this->get_association_name($name),
+                    $file);
+        return false;
+    }
+
+    private function full_path($name)
+    {
+        return $this->base_dir.$name;
+    }
+
+    private function get_association_name($name)
+    {
+        if(($t = strrpos($name, '_')) !== false) return substr($name, 0, $t);
+        return $name;
+    }
+
+    function getAssociated($template)
+    {
+        $rez = array();
+        $dir = dirname($template->name).'/';
+        if($dir === './') $dir = '';
+        $list = scandir($this->base_dir.$dir);
+        foreach($list as $file)
+        {
+            if($file[0] != '.')
+            {
+                if(strrchr($file, '.') === '.tpl' && $template->association === $this->get_association_name($dir.$file))
+                        $rez[] = $this->load($dir.$file);
+            }
+        }
+        return $rez;
+    }
+
+}
+
+//end of class -----------------------------------------------------------------
+
+class TemplateFS {
+
+    private $file;
+    var $name;
+    var $association;
+
+    function __construct($name, $association, $file)
+    {
+        $this->file = $file;
+        $this->name = $name;
+        $this->association = $association;
+    }
+
+    function check_bin($binTemplate)
+    {
+        return filemtime($this->file) < $binTemplate->info['created'];
+    }
+
+    function source()
+    {
+        return file_get_contents($this->file);
+    }
+
+}
+
+//end of class -----------------------------------------------------------------
+
+class CacheProviderFS {
+
+    private $baseDir;
+
+    function __construct($baseDir)
+    {
+
+        $this->baseDir = $baseDir;
+    }
+
+    private function cache_dir($binTemplate)
+    {
+        return $this->baseDir.abs(crc32($binTemplate->info['association'])).'/cache/';
+    }
+
+    private function cache_file($id = '')
+    {
+        $name = md5(serialize($id));
+        return $name[0].$name[1].'/'.$name;
+    }
+
+    function clear_cache($binTemplate, $id = '')
+    {
+        if($id !== '')
+        {
+            $cache_file = $this->cache_dir($binTemplate).
+                    $this->cache_file($id);
+
+            if(is_file($cache_file)) unlink($cache_file);
+        }
+        else Gekkon::clear_dir($this->cache_dir($binTemplate));
+    }
+
+    function save($binTemplate, $id = '', $content)
+    {
+        Gekkon::create_dir(dirname($cache_file = $this->cache_dir($binTemplate).
+                        $this->cache_file($id)));
+        file_put_contents($cache_file, $content);
+    }
+
+    function load($binTemplate, $id)
+    {
+        $cache_file = $this->cache_dir($binTemplate).
+                $this->cache_file($id);
+        if(is_file($cache_file))
+                return array(
+                'created' => filemtime($cache_file),
+                'content' => file_get_contents($cache_file)
+            );
+        return false;
+    }
+
+}
+
+//end of class -----------------------------------------------------------------
+
+class BinTplProviderFS {
+
+    private $base_dir;
+    private $loaded = array();
+
+    function __construct($base)
+    {
+        $this->base_dir = $base;
+    }
+
+    private function full_path($association)
+    {
+        $bin_name = basename($association);
+        $bin_path = $this->base_dir.abs(crc32($association)).'/';
+        return $bin_path.$bin_name.'.php';
+    }
+
+    function load($template)
+    {
+        if(isset($this->loaded[$template->name]))
+                return $this->loaded[$template->name];
+
+        $file = $this->full_path($template->association);
+        if(is_file($file))
+        {
+            $bins = include($file);
+            foreach($bins as $name => $blocks)
+            {
+                $this->loaded[$name] = new binTemplate($blocks);
+            }
+            return $this->loaded[$template->name];
+        }
+        return false;
+    }
+
+    function save($template, $binTplCodeSet)
+    {
+        Gekkon::create_dir(dirname($file = $this->full_path($template->association)));
+        file_put_contents($file, '<?php return '.$binTplCodeSet->code());
+    }
+
+    function clear_cache($template)
+    {
+        if(is_file($file = $this->full_path($template->association)) !== false)
+                unlink($file);
+    }
+
+}
+
+//end of class -----------------------------------------------------------------
+
+class binTemplate {
+
+    var $blocks = array();
+    var $info = array();
+
+    function __construct($blocks)
+    {
+        $this->blocks = $blocks['blocks'];
+        $this->info = $blocks['info'];
+    }
+
+    function display($gekkon, $_scope = false)
+    {
+        $this->blocks['main']($this, $gekkon, $gekkon->get_scope($_scope));
+    }
+
+}
+

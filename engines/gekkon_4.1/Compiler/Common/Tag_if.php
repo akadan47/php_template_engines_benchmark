@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_set extends gekkon_base_tag_single {
+namespace Gekkon;
+
+class Tag_if extends BaseTag {
 
     function compile($compiler)
     {
@@ -9,10 +11,14 @@ class gekkon_tag_set extends gekkon_base_tag_single {
 
         if($exp === false)
                 return $compiler->error_in_tag('Cannot compile expression "'.$this->args_raw.'"',
-                    $this);
+                            $this);
 
-        return $exp.";\n";
+        $_rez = "if(".$exp."){\n";
+        return $_rez.
+                $compiler->compile_str($this->content_raw, $this).
+                "}\n";
     }
 
 }
 
+//end of class

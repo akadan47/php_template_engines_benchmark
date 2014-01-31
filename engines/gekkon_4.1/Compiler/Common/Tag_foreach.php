@@ -1,6 +1,8 @@
 <?php
 
-class gekkon_tag_foreach extends gekkon_base_tag {
+namespace Gekkon;
+
+class Tag_foreach extends BaseTag {
 
     function compile($compiler)
     {
@@ -12,16 +14,16 @@ class gekkon_tag_foreach extends gekkon_base_tag {
             $args_data = $exp_compiler->parse_expression($this->args_raw);
             if($args_data === false)
                     return $compiler->error_in_tag('Cannot parse args "'.$this->args_raw.'"',
-                        $this);
+                                $this);
 
             $args = $exp_compiler->parse_construction($args_data,
-                array('<exp>', 'as', '<exp>', '=', '>', '<exp>', ';', '<exp>'),
-                false);
+                    array('<exp>', 'as', '<exp>', '=', '>', '<exp>', ';', '<exp>'),
+                    false);
 
 
             if($args === false)
                     $args = $exp_compiler->parse_construction($args_data,
-                    array('<exp>', 'as', '<exp>', ';', '<exp>'), false);
+                        array('<exp>', 'as', '<exp>', ';', '<exp>'), false);
 
 
             if($args !== false)
@@ -32,7 +34,7 @@ class gekkon_tag_foreach extends gekkon_base_tag {
                     $args = $exp_compiler->compile_construction_expressions($args);
                     if($args === false)
                             return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
-                                $this);
+                                        $this);
 
                     $x_args = array(
                         'from' => $args[0],
@@ -62,21 +64,21 @@ class gekkon_tag_foreach extends gekkon_base_tag {
             $args = $exp_compiler->compile_construction_expressions($args);
             if(!isset($args['from']))
                     return $compiler->error_in_tag('Missing required argument "from"',
-                        $this);
+                                $this);
 
             if(!isset($args['item']))
                     return $compiler->error_in_tag('Missing required argument "item"',
-                        $this);
+                                $this);
 
             if($args === false)
                     return $compiler->error_in_tag('Cannot compile args "'.$this->args_raw.'"',
-                        $this);
+                                $this);
         }
 
         //Check args parsing results
         if($args === false)
                 return $compiler->error_in_tag('Cannot parse args "'.$this->args_raw.'"',
-                    $this);
+                            $this);
 
         $meta_init = '';
         $meta_body = '';
@@ -117,15 +119,15 @@ class gekkon_tag_foreach extends gekkon_base_tag {
         if(isset($content[1]))
         {
             $empty = "if($_is_empty) {\n".
-                $compiler->compile_parsed_str($content[1]).
-                "}\n";
+                    $compiler->compile_parsed_str($content[1]).
+                    "}\n";
         }
         return $meta_init.
-            $loop_start.
-            $compiler->compile_parsed_str($content[0]).
-            $meta_body.
-            "$_is_empty=false;}\n".
-            $empty;
+                $loop_start.
+                $compiler->compile_parsed_str($content[0]).
+                $meta_body.
+                "$_is_empty=false;}\n".
+                $empty;
     }
 
 }
