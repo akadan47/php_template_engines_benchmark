@@ -9,7 +9,7 @@ class Tag_include extends BaseTagSingle {
         if(trim($this->args_raw) === '')
                 return $compiler->error_in_tag('Missing args', $this);
 
-        $additional_args = array('scope' => '$scope');
+        $additional_args = array('scope' => '$scope', 'block' => "'main'");
         if(preg_match('/\w+\s*=/u', $this->args_raw, $preg_data,
                         PREG_OFFSET_CAPTURE))
         {
@@ -29,7 +29,7 @@ class Tag_include extends BaseTagSingle {
                             $this);
 
         $additional_args['scope'] = $compiler->exp_compiler->join_scopes($additional_args['scope']);
-        return '$gekkon->display('.$exp.', '.$additional_args['scope'].");\n";
+        return '$gekkon->display('.$exp.', '.$additional_args['scope'].', '.$additional_args['block'].");\n";
     }
 
 }

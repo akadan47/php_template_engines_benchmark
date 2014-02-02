@@ -38,10 +38,11 @@ class Gekkon {
         $this->data[$name] = $data;
     }
 
-    function display($tpl_name, $scope_data = false)
+    function display($tpl_name, $scope_data = false, $block = 'main')
     {
         if(($binTemplate = $this->template($tpl_name)) !== false)
-                $binTemplate->display($this, $this->get_scope($scope_data));
+                $binTemplate->display($this, $this->get_scope($scope_data),
+                    $block);
     }
 
     function get_display($tpl_name, $scope_data = false)
@@ -367,7 +368,7 @@ class binTemplate {
         $this->info = $blocks['info'];
     }
 
-    function display($gekkon, $scope = false, $block = 'main')
+    function display($gekkon, $scope, $block = 'main')
     {
         if(isset($this->blocks[$block]))
                 $this->blocks[$block]($this, $gekkon, $scope);
