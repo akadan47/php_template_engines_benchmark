@@ -22,7 +22,12 @@ class BaseTag {
         return '';
     }
 
-    function get_closer($_str)
+    function custom_handler($compiler, $_str)
+    {
+        return true;
+    }
+
+    function get_closer()
     {
         return '/'.$this->name;
     }
@@ -35,8 +40,7 @@ class BaseTag {
 
     function open_lines()
     {
-        return
-                substr_count($this->open_raw, "\n");
+        return substr_count($this->open_raw, "\n");
     }
 
     function copy($_tag)

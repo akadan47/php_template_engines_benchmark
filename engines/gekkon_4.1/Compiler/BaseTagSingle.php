@@ -4,7 +4,7 @@ namespace Gekkon;
 
 class BaseTagSingle extends BaseTag {
 
-    function get_closer($_str)
+    function get_closer()
     {
         return false;
     }

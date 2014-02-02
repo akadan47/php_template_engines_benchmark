@@ -6,9 +6,9 @@ class TagSysCommon {
 
     var $compiler;
 
-    function __construct(&$compiler)
+    function __construct($compiler)
     {
-        $this->compiler = &$compiler;
+        $this->compiler = $compiler;
     }
 
     function try_parse($_tag, $_str)
@@ -27,11 +27,15 @@ class TagSysCommon {
         $_new_tag->name = $_tag_name;
         $_new_tag->system = 'common';
         $_new_tag->args_raw = $_tag_args_raw;
+
+        if($_new_tag->custom_handler($this->compiler, $_str) === false)
+                return $_tag;
+
         $_ready_tag = $this->parse_end_of_tag($_new_tag, $_str);
 
         if($_ready_tag === false)
         {
-            $this->compiler->error_in_tag('Cannot find closing tag '.$_new_tag->get_closer($_str),
+            $this->compiler->error_in_tag('Cannot find closing tag '.$_new_tag->get_closer(),
                     $_new_tag);
             return $_tag;
         }
@@ -41,7 +45,7 @@ class TagSysCommon {
 
     function parse_end_of_tag($_tag, $_str)
     {
-        $closer = $_tag->get_closer($_str);
+        $closer = $_tag->get_closer();
         if($closer === false) return $_tag;
 
         $opens = array();
