@@ -7,7 +7,6 @@ class Gekkon {
     var $gekkon_path;
     var $compiler;
     var $display_errors;
-    var $tpl_name;
     var $settings;
     var $loaded;
     var $data;
@@ -20,7 +19,6 @@ class Gekkon {
         $this->gekkon_path = dirname(__file__).'/';
         $this->compiler = false;
         $this->display_errors = ini_get('display_errors') == 'on';
-        $this->tpl_name = '';
         $this->settings = array('force_compile' => false);
         $this->loaded = array();
         $this->data = new ArrayObject();
@@ -361,6 +359,7 @@ class binTemplate {
 
     var $blocks = array();
     var $info = array();
+    var $parent = false;
 
     function __construct($blocks)
     {
@@ -368,9 +367,20 @@ class binTemplate {
         $this->info = $blocks['info'];
     }
 
-    function display($gekkon, $_scope = false)
+    function display($gekkon, $scope = false, $block = 'main')
     {
-        $this->blocks['main']($this, $gekkon, $gekkon->get_scope($_scope));
+        if(isset($this->blocks[$block]))
+                $this->blocks[$block]($this, $gekkon, $scope);
+        elseif($this->parent !== false)
+                $this->parent->display($gekkon, $scope, $block);
+    }
+
+    function extend($template)
+    {
+        $new_tpl = new binTemplate(array('blocks' => $this->blocks, 'info' => $this->info));
+        $new_tpl->parent = $template;
+        $new_tpl->blocks['main'] = $template->blocks['main'];
+        return $new_tpl;
     }
 
 }

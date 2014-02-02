@@ -11,7 +11,7 @@ class TagSysCommon {
         $this->compiler = &$compiler;
     }
 
-    function try_parse($_tag, &$_str)
+    function try_parse($_tag, $_str)
     {
         if(!preg_match('/^\s*([a-zA-Z0-9_]+)(\s.+)?$/u', $_tag->open_raw,
                         $preg_data)) return $_tag;
@@ -31,7 +31,7 @@ class TagSysCommon {
 
         if($_ready_tag === false)
         {
-            $this->compiler->error_in_tag('Cannot find closing tag '.$_new_tag->get_closer(),
+            $this->compiler->error_in_tag('Cannot find closing tag '.$_new_tag->get_closer($_str),
                     $_new_tag);
             return $_tag;
         }
@@ -39,9 +39,9 @@ class TagSysCommon {
         return $_ready_tag;
     }
 
-    function parse_end_of_tag($_tag, &$_str)
+    function parse_end_of_tag($_tag, $_str)
     {
-        $closer = $_tag->get_closer();
+        $closer = $_tag->get_closer($_str);
         if($closer === false) return $_tag;
 
         $opens = array();

@@ -22,7 +22,7 @@ class BaseTag {
         return '';
     }
 
-    function get_closer()
+    function get_closer($_str)
     {
         return '/'.$this->name;
     }
