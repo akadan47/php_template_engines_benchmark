@@ -13,7 +13,8 @@ class Tag_extends extends BaseTagSingle {
                             $this);
 
         return "\$_gkn_extends=\$gekkon->template($exp);\n".
-                "\$template->extend(\$_gkn_extends)->display(\$gekkon,\$scope);\n";
+                "\$template->extend(\$_gkn_extends)->display(\$gekkon,\$scope);\n".
+                "return;\n";
     }
 
 }

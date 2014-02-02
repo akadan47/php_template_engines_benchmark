@@ -368,12 +368,15 @@ class binTemplate {
         $this->info = $blocks['info'];
     }
 
-    function display($gekkon, $scope, $block = 'main')
+    function display($gekkon, $scope, $block_name = 'main')
     {
-        if(isset($this->blocks[$block]))
-                $this->blocks[$block]($this, $gekkon, $scope);
+        if(isset($this->blocks[$block_name]))
+        {
+            $block = $this->blocks[$block_name];
+            $block($this, $gekkon, $scope);
+        }
         elseif($this->parent !== false)
-                $this->parent->display($gekkon, $scope, $block);
+                $this->parent->display($gekkon, $scope, $block_name);
     }
 
     function extend($template)
