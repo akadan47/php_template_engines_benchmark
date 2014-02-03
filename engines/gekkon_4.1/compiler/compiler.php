@@ -62,8 +62,8 @@ class Compiler {
 
     function compile_one($template)
     {
-        $this->binTplCode = new BinTemplateCode($template);
-        $this->binTplCode->set($this->compile_str($template->source()));
+        $this->binTplCode = new BinTemplateCode($this, $template);
+        $this->binTplCode->blocks['__main'] = $this->compile_str($template->source());
         return $this->binTplCode;
     }
 
@@ -112,11 +112,11 @@ class Compiler {
             if($_tag->open_start > 0)
             {
                 $before = new Tag_static(
-                        substr($_str, 0, $_tag->open_start));
+                        mb_substr($_str, 0, $_tag->open_start));
                 $rez[] = $before;
                 //echo $_line, '>', trim($before->content_raw), "\n";
                 $_line += $before->total_lines();
-                $_str = substr($_str, $before->total_length());
+                $_str = mb_substr($_str, $before->total_length());
                 $_tag->open_start = 0;
             }
             //echo $_line, '>', trim($_tag->open_raw), "\n";
@@ -124,7 +124,7 @@ class Compiler {
             $_tag = $this->parse_tag($_tag, $_str);
 
             $_line += $_tag->total_lines();
-            $_str = substr($_str, $_tag->total_length());
+            $_str = mb_substr($_str, $_tag->total_length());
 
             $rez[] = $_tag;
         }
@@ -249,47 +249,31 @@ class Compiler {
 
 class BinTemplateCode {
 
-    var $blocks = array();
-    var $current;
-    var $blocks_stack = array();
     var $template;
+    var $meta = array();
+    var $blocks = array();
 
-    function __construct($template)
+    function __construct($compiler, $template)
     {
         $this->template = $template;
-        $this->pushBlock('main');
-    }
-
-    function pushBlock($name)
-    {
-        array_push($this->blocks_stack, $name);
-        $this->current = $name;
-        if(!isset($this->blocks[$name])) $this->blocks[$name] = '';
-    }
-
-    function popBlock()
-    {
-        $this->current = array_pop($this->blocks_stack);
-    }
-
-    function add($code)
-    {
-        $this->blocks[$this->current] .= $code;
-    }
-
-    function addBefore($code)
-    {
-        $this->blocks[$this->current] = $code.$this->blocks[$this->current];
-    }
-
-    function set($code)
-    {
-        $this->blocks[$this->current] = $code;
+        $this->blocks['__main'] = '';
+        $this->blocks['__constructor'] = '';
+        $this->meta['created'] = time();
+        $this->meta['name'] = $this->template->name;
+        $this->meta['association'] = $this->template->association;
+        $this->meta['gekkon_ver'] = $compiler->gekkon->version;
     }
 
     function code()
     {
-        $rez = "array('blocks'=> array(\n";
+        $rez = "array(";
+
+        foreach($this->meta as $name => $value)
+        {
+            $rez .= "'$name'=>".var_export($value, true).",\n";
+        }
+        $rez.="'blocks'=> array(\n";
+
         foreach($this->blocks as $name => $block)
         {
             $rez .= "'$name'=>function (\$template,\$gekkon,\$scope){\n".
@@ -297,11 +281,8 @@ class BinTemplateCode {
                     "},\n";
         }
         $info = array(
-            'created' => time(),
-            'name' => $this->template->name,
-            'association' => $this->template->association,
         );
-        $rez.="),'info'=>".var_export($info, true).")\n";
+        $rez.="))\n";
         return $rez;
     }
 

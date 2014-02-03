@@ -12,9 +12,22 @@ class Tag_extends extends BaseTagSingle {
                 return $compiler->error_in_tag('Cannot compile expression "'.$this->args_raw.'"',
                             $this);
 
-        return "\$_gkn_extends=\$gekkon->template($exp);\n".
-                "\$template->extend(\$_gkn_extends)->display(\$gekkon,\$scope);\n".
-                "return;\n";
+        $compiler->binTplCode->blocks['__constructor'].=
+                "\$_gkn_extends=\$gekkon->template($exp);\n".
+                "\$template['parent']=\$_gkn_extends;\n".
+                "\$template['blocks']['__main']=\$_gkn_extends['blocks']['__main'];\n";
+
+
+        $compiler->compile_str($this->content_raw, $this);
+        return '';
+    }
+
+    function custom_handler($compiler, $_str)
+    {
+        $open_end = $this->open_length + $this->open_start;
+        $this->content_raw = mb_substr($_str, $open_end); //to the end
+        $this->close_length = 0;
+        return true;
     }
 
 }

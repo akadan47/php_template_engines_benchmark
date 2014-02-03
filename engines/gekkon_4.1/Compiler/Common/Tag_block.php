@@ -15,7 +15,7 @@ class Tag_block extends BaseTag {
         $compiler->binTplCode->blocks[$block_name] =
                 $compiler->compile_str($this->content_raw, $this);
 
-        return "\$template->display(\$gekkon,\$scope,'$block_name');\n";
+        return "\$template->display(\$scope,'$block_name');\n";
     }
 
 }

@@ -24,7 +24,7 @@ class Gekkon {
         $this->data = new ArrayObject();
         $this->data['global'] = $this->data;
         $this->tplProvider = new TemplateProviderFS($tpl_path);
-        $this->binTplProvider = new BinTplProviderFS($bin_path);
+        $this->binTplProvider = new BinTplProviderFS($this, $bin_path);
         $this->cacheProvider = new CacheProviderFS($bin_path);
     }
 
@@ -38,11 +38,10 @@ class Gekkon {
         $this->data[$name] = $data;
     }
 
-    function display($tpl_name, $scope_data = false, $block = 'main')
+    function display($tpl_name, $scope_data = false, $block = '__main')
     {
         if(($binTemplate = $this->template($tpl_name)) !== false)
-                $binTemplate->display($this, $this->get_scope($scope_data),
-                    $block);
+                $binTemplate->display($this->get_scope($scope_data), $block);
     }
 
     function get_display($tpl_name, $scope_data = false)
@@ -201,7 +200,7 @@ class TemplateProviderFS {
     private function get_association_name($name)
     {
         $name = basename($name);
-        if(($t = strrpos($name, '_')) !== false) return substr($name, 0, $t);
+        if(($t = strpos($name, '_')) !== false) return substr($name, 0, $t);
         return $name;
     }
 
@@ -238,7 +237,7 @@ class TemplateFS {
 
     function check_bin($binTemplate)
     {
-        return filemtime($this->name) < $binTemplate->info['created'];
+        return filemtime($this->name) < $binTemplate['created'];
     }
 
     function source()
@@ -256,13 +255,12 @@ class CacheProviderFS {
 
     function __construct($baseDir)
     {
-
         $this->baseDir = $baseDir;
     }
 
     private function cache_dir($binTemplate)
     {
-        return $this->baseDir.abs(crc32($binTemplate->info['association'])).'/cache/';
+        return $this->baseDir.abs(crc32($binTemplate['association'])).'/cache/';
     }
 
     private function cache_file($tpl_name, $id = '')
@@ -292,7 +290,7 @@ class CacheProviderFS {
     function load($binTemplate, $id)
     {
         $cache_file = $this->cache_dir($binTemplate).
-                $this->cache_file($binTemplate->info['name'], $id);
+                $this->cache_file($binTemplate['name'], $id);
         if(is_file($cache_file))
                 return array(
                 'created' => filemtime($cache_file),
@@ -310,9 +308,10 @@ class BinTplProviderFS {
     private $base_dir;
     private $loaded = array();
 
-    function __construct($base)
+    function __construct($gekkon, $base)
     {
         $this->base_dir = $base;
+        $this->gekkon = $gekkon;
     }
 
     private function full_path($association)
@@ -325,17 +324,15 @@ class BinTplProviderFS {
     function load($template)
     {
         if(isset($this->loaded[$template->name]))
-                return $this->loaded[$template->name];
+                return new binTemplate($this->gekkon,
+                    $this->loaded[$template->name]);
 
         $file = $this->full_path($template->association);
         if(is_file($file))
         {
             $bins = include($file);
-            foreach($bins as $name => $blocks)
-            {
-                $this->loaded[$name] = new binTemplate($blocks);
-            }
-            return $this->loaded[$template->name];
+            $this->loaded = array_merge($this->loaded, $bins);
+            return new binTemplate($this->gekkon, $this->loaded[$template->name]);
         }
         return false;
     }
@@ -356,35 +353,28 @@ class BinTplProviderFS {
 
 //end of class -----------------------------------------------------------------
 
-class binTemplate {
+class binTemplate extends \ArrayObject {
 
-    var $blocks = array();
-    var $info = array();
-    var $parent = false;
+    var $gekkon;
 
-    function __construct($blocks)
+    function __construct($gekkon, $template_data)
     {
-        $this->blocks = $blocks['blocks'];
-        $this->info = $blocks['info'];
+        $this->gekkon = $gekkon;
+        $this->exchangeArray($template_data);
+        $this['parent'] = false;
+        $block = $this['blocks']['__constructor'];
+        $block($this, $this->gekkon, $this->gekkon->get_scope());
     }
 
-    function display($gekkon, $scope, $block_name = 'main')
+    function display($scope, $block_name = '__main')
     {
-        if(isset($this->blocks[$block_name]))
+        if(isset($this['blocks'][$block_name]))
         {
-            $block = $this->blocks[$block_name];
-            $block($this, $gekkon, $scope);
+            $block = $this['blocks'][$block_name];
+            $block($this, $this->gekkon, $scope);
         }
-        elseif($this->parent !== false)
-                $this->parent->display($gekkon, $scope, $block_name);
-    }
-
-    function extend($template)
-    {
-        $new_tpl = new binTemplate(array('blocks' => $this->blocks, 'info' => $this->info));
-        $new_tpl->parent = $template;
-        $new_tpl->blocks['main'] = $template->blocks['main'];
-        return $new_tpl;
+        elseif($this['parent'] !== false)
+                $this['parent']->display($scope, $block_name);
     }
 
 }

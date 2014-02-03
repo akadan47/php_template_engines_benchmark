@@ -97,9 +97,8 @@ class TagSysCommon {
         }
         if($f == 0)
         {
-            $_tag->content_raw = substr($_str, $_tag->open_length,
+            $_tag->content_raw = mb_substr($_str, $_tag->open_length,
                     $pos - $_tag->open_length);
-            $_tag->close_start = $pos;
             $_tag->close_length = $end_len;
             return $_tag;
         }

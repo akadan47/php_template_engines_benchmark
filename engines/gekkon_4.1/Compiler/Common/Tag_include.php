@@ -9,7 +9,7 @@ class Tag_include extends BaseTagSingle {
         if(trim($this->args_raw) === '')
                 return $compiler->error_in_tag('Missing args', $this);
 
-        $additional_args = array('scope' => '$scope', 'block' => "'main'");
+        $additional_args = array('scope' => '$scope', 'block' => "'__main'");
         if(preg_match('/\w+\s*=/u', $this->args_raw, $preg_data,
                         PREG_OFFSET_CAPTURE))
         {
