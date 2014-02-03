@@ -361,7 +361,6 @@ class binTemplate extends \ArrayObject {
     {
         $this->gekkon = $gekkon;
         $this->exchangeArray($template_data);
-        $this['parent'] = false;
         $block = $this['blocks']['__constructor'];
         $block($this, $this->gekkon, $this->gekkon->get_scope());
     }
@@ -373,8 +372,6 @@ class binTemplate extends \ArrayObject {
             $block = $this['blocks'][$block_name];
             $block($this, $this->gekkon, $scope);
         }
-        elseif($this['parent'] !== false)
-                $this['parent']->display($scope, $block_name);
     }
 
 }

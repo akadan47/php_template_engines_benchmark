@@ -183,7 +183,7 @@ class ExpCompiler {
         }
 
         if(count($buffer) > 0)
-                $rez[$current] = array('t' => '<exp>', 'v' => $buffer);;
+                $rez[$current] = array('t' => '<exp>', 'v' => $buffer);
         return $rez;
     }
 
@@ -193,19 +193,17 @@ class ExpCompiler {
 
         if(count($values) > 1)
         {
-            $exp = 'array_merge(';
             foreach($values as $k => $v)
             {
-                $value[$k] = '(array)'.$v;
+                $values[$k] = '(array)'.$v;
             }
-            $exp.=implode(', ', array_reverse($value));
-            $exp.=')';
+            $exp = implode('+ ', $values);
         }
         else
         {
             $exp = $values[0];
         }
-        return $exp;
+        return '$gekkon->get_scope('.$exp.')';
     }
 
 }

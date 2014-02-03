@@ -14,9 +14,8 @@ class Tag_extends extends BaseTagSingle {
 
         $compiler->binTplCode->blocks['__constructor'].=
                 "\$_gkn_extends=\$gekkon->template($exp);\n".
-                "\$template['parent']=\$_gkn_extends;\n".
+                "\$template['blocks']+=\$_gkn_extends['blocks'];\n".
                 "\$template['blocks']['__main']=\$_gkn_extends['blocks']['__main'];\n";
-
 
         $compiler->compile_str($this->content_raw, $this);
         return '';
