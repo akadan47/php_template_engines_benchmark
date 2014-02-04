@@ -19,5 +19,13 @@ $settings = array(
             'open' => '{#',
             'close' => '#}',
         ),
+        'Static' => array(
+            'open' => '{!',
+            'close' => '}',
+        ),
+        'StaticGettext' => array(
+            'open' => '{{!',
+            'close' => '}}',
+        ),
     ),
 );

@@ -7,12 +7,12 @@ class TagSysGettext extends BaseTagSingle {
 
     var $compiler;
 
-    function __construct(&$compiler)
+    function __construct($compiler)
     {
-        $this->compiler = &$compiler;
+        $this->compiler = $compiler;
     }
 
-    function try_parse($_tag, &$_str)
+    function try_parse($_tag, $_str)
     {
         if($_tag->open_raw === '') return $_tag;
         $_new_tag = new TagSysGettext($this->compiler);

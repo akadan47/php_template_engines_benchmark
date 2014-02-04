@@ -47,8 +47,7 @@ class BaseTag {
     {
         foreach($_tag as $k => $v)
         {
-            if(is_object($_tag->$k)) $this->$k = &$_tag->$k;
-            else $this->$k = $_tag->$k;
+            $this->$k = $_tag->$k;
         }
     }
 

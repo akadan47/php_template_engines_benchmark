@@ -7,12 +7,12 @@ class TagSysComment extends BaseTag {
 
     var $compiler;
 
-    function __construct(&$compiler)
+    function __construct($compiler)
     {
-        $this->compiler = &$compiler;
+        $this->compiler = $compiler;
     }
 
-    function try_parse($_tag, &$_str)
+    function try_parse($_tag, $_str)
     {
         $this->copy($_tag);
         $this->system = 'comment';
